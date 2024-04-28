@@ -20,3 +20,12 @@ function eliminarEmpleado(id_empleado, foto_empleado) {
     }
   }
 }
+
+function eliminarProceso(id_proceso) {
+  if (confirm("¿Estas seguro que deseas Eliminar el proceso?")) {
+    let url = `/borrar-proceso/${id_proceso}`;
+    if (url) {
+      window.location.href = url;
+    }
+  }
+}

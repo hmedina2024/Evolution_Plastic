@@ -9,6 +9,7 @@ from controllers.funciones_home import *
 PATH_URL = "public/empleados"
 
 
+#### Empleados
 @app.route('/registrar-empleado', methods=['GET'])
 def viewFormEmpleado():
     if 'conectado' in session:
@@ -122,3 +123,121 @@ def reporteBD():
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
+    
+    
+    
+    
+    
+    
+#### PROCESOS
+@app.route('/registrar-proceso', methods=['GET'])
+def viewFormProceso():
+    if 'conectado' in session:
+        return render_template('public/procesos/form_proceso.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+
+@app.route('/form-registrar-proceso', methods=['POST'])
+def formProceso():
+    if 'conectado' in session:
+        resultado = procesar_form_proceso(request.form)
+        if resultado:
+            return redirect(url_for('lista_procesos'))
+        else:
+            flash('El proceso NO fue registrado.', 'error')
+            return render_template('public/procesos/form_proceso.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route('/lista-de-procesos', methods=['GET'])
+def lista_procesos():
+    if 'conectado' in session:
+        return render_template('public/procesos/lista_procesos.html', procesos=sql_lista_procesosBD())
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route("/detalles-proceso/", methods=['GET'])
+@app.route("/detalles-proceso/<string:codigo_proceso>", methods=['GET'])
+def detalleProceso(codigo_proceso=None):
+    if 'conectado' in session:
+        # Verificamos si el parámetro codigo_proceso es None o no está presente en la URL
+        if codigo_proceso is None:
+            return redirect(url_for('inicio'))
+        else:
+            detalle_proceso = sql_detalles_procesosBD(codigo_proceso) or []
+            return render_template('public/procesos/detalles_proceso.html', detalle_proceso=detalle_proceso)
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Buscador de proceso
+# @app.route("/buscando-proceso", methods=['POST'])
+# def viewBuscarProcesoBD():
+#     resultadoBusqueda2 = buscarProcesoBD(request.json['busqueda'])
+#     if resultadoBusqueda2:
+#         return render_template('public/procesos/resultado_busqueda_proceso.html', dataBusqueda2=resultadoBusqueda2)
+#     else:   
+#         return jsonify({'fin': 0})
+
+
+@app.route("/editar-proceso/<int:id>", methods=['GET'])
+def viewEditarproceso(id):
+    if 'conectado' in session:
+        respuestaProceso = buscarProcesoUnico(id)
+        if respuestaProceso:
+            return render_template('public/procesos/form_proceso_update.html', respuestaProceso=respuestaProceso)
+        else:
+            flash('El Proceso no existe.', 'error')
+            return redirect(url_for('inicio'))
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Recibir formulario para actulizar informacion de proceso
+@app.route('/actualizar-proceso', methods=['POST'])
+def actualizarProceso():
+    resultData = procesar_actualizar_form(request)
+    if resultData:
+        return redirect(url_for('lista_procesos'))
+
+
+# @app.route("/lista-de-usuarios", methods=['GET'])
+# def usuarios():
+#     if 'conectado' in session:
+#         resp_usuariosBD = lista_usuariosBD()
+#         return render_template('public/usuarios/lista_usuarios.html', resp_usuariosBD=resp_usuariosBD)
+#     else:
+#         return redirect(url_for('inicioCpanel'))
+
+
+# @app.route('/borrar-usuario/<string:id>', methods=['GET'])
+# def borrarUsuario(id):
+#     resp = eliminarUsuario(id)
+#     if resp:
+#         flash('El Usuario fue eliminado correctamente', 'success')
+#         return redirect(url_for('usuarios'))
+
+
+@app.route('/borrar-proceso/<int:id_proceso>', methods=['GET'])
+def borrarProceso(id_proceso):
+    resp = eliminarProceso(id_proceso)
+    if resp:
+        flash('El proceso fue eliminado correctamente', 'success')
+        return redirect(url_for('lista_procesos'))
+
+
+# @app.route("/descargar-informe-empleados/", methods=['GET'])
+# def reporteBD():
+#     if 'conectado' in session:
+#         return generarReporteExcel()
+#     else:
+#         flash('primero debes iniciar sesión.', 'error')
+#         return redirect(url_for('inicio'))

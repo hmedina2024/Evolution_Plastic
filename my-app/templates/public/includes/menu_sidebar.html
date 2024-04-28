@@ -33,6 +33,20 @@
       </a>
     </li>
     <li
+      class="menu-item {% if request.path == '/registrar-proceso' %} active {% endif %}">
+      <a href="{{ url_for('viewFormProceso') }}" class="menu-link">
+        <i class="menu-icon bi bi-person-bounding-box"></i>
+        <div data-i18n="Basic">Registrar Proceso</div>
+      </a>
+    </li>
+    <li
+      class="menu-item {% if request.path == '/lista-de-procesos' %} active{% endif %}">
+      <a href="/lista-de-procesos" class="menu-link">
+        <i class="menu-icon bi bi-person-lines-fill"></i>
+        <div data-i18n="Boxicons">Lista de Procesos</div>
+      </a>
+    </li>
+    <li
       class="menu-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
       <a href="/descargar-informe-empleados" class="menu-link">
         <i class="menu-icon bi bi-file-earmark-spreadsheet-fill"></i>

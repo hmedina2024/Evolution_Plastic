@@ -1,0 +1,66 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Crud con Python 🐍 | Registrar Proceso{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<!---->
+{% if (detalle_proceso|length) %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">
+        <a href="/lista-de-procesos">
+          <i class="bi bi-arrow-left-circle"></i>
+        </a>
+        INFORMACIÓN DEL PROCESO
+      </h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="codigo_proceso" class="form-label">
+              Codigo del proceso
+            </label>
+            <br />
+            {{ detalle_proceso.nombre_proceso}}
+          </div>
+          <div class="col-md-6">
+            <label for="apellido_proceso" class="form-label">
+              Nombre del proceso
+            </label>
+            <br />
+            {{ detalle_proceso.apellido_proceso}}
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <label for="descripcion_proceso" class="form-label">
+              Descripción Proceso
+            </label>
+            <br />
+            {{ descripcion_proceso.descripcion_proceso}}
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<h2 class="text-center">
+  No existe el Proceso 😭
+  <hr />
+</h2>
+{% endif %} {% endblock %}
