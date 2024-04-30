@@ -241,3 +241,104 @@ def borrarProceso(id_proceso):
 #     else:
 #         flash('primero debes iniciar sesión.', 'error')
 #         return redirect(url_for('inicio'))
+
+
+
+
+#### CLIENTES
+@app.route('/registrar-cliente', methods=['GET'])
+def viewFormCliente():
+    if 'conectado' in session:
+        return render_template('public/clientes/form_cliente.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route('/form-registrar-cliente', methods=['POST'])
+def formCliente():
+    if 'conectado' in session:
+        if 'foto_cliente' in request.files:
+            foto_perfil_cliente = request.files['foto_cliente']
+            resultado = procesar_form_cliente(request.form, foto_perfil_cliente)
+            if resultado:
+                return redirect(url_for('lista_clientes'))
+            else:
+                flash('El cliente NO fue registrado.', 'error')
+                return render_template('public/clientes/form_cliente.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route('/lista-de-clientes', methods=['GET'])
+def lista_clientes():
+    if 'conectado' in session:
+        return render_template('public/clientes/lista_clientes.html', clientes=sql_lista_clientesBD())
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route("/detalles-cliente/", methods=['GET'])
+@app.route("/detalles-cliente/<int:idCliente>", methods=['GET'])
+def detalleCliente(idCliente=None):
+    if 'conectado' in session:
+        # Verificamos si el parámetro idEmpleado es None o no está presente en la URL
+        if idCliente is None:
+            return redirect(url_for('inicio'))
+        else:
+            detalle_cliente = sql_detalles_clientesBD(idCliente) or []
+            return render_template('public/clientes/detalles_cliente.html', detalle_cliente=detalle_cliente)
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Buscadon de clientes
+@app.route("/buscando-cliente", methods=['POST'])
+def viewBuscarClienteBD():
+    resultadoBusqueda = buscarClienteBD(request.json['busqueda'])
+    if resultadoBusqueda:
+        return render_template('public/clientes/resultado_busqueda_cliente.html', dataBusqueda=resultadoBusqueda)
+    else:
+        return jsonify({'fin': 0})
+
+
+@app.route("/editar-cliente/<int:id>", methods=['GET'])
+def viewEditarCliente(id):
+    if 'conectado' in session:
+        respuestaCliente = buscarClienteUnico(id)
+        if respuestaCliente:
+            return render_template('public/clientes/form_cliente_update.html', respuestaCliente=respuestaCliente)
+        else:
+            flash('El cliente no existe.', 'error')
+            return redirect(url_for('inicio'))
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Recibir formulario para actulizar informacion de cliente
+@app.route('/actualizar-cliente', methods=['POST'])
+def actualizarCliente():
+    resultData = procesar_actualizacion_cliente(request)
+    if resultData:
+        return redirect(url_for('lista_clientes'))
+
+
+@app.route('/borrar-cliente/<string:id_cliente>/<string:foto_cliente>', methods=['GET'])
+def borrarCliente(id_cliente, foto_cliente):
+    resp = eliminarCliente(id_cliente, foto_cliente)
+    if resp:
+        flash('El Cliente fue eliminado correctamente', 'success')
+        return redirect(url_for('lista_clientes'))
+
+
+# @app.route("/descargar-informe-clientes/", methods=['GET'])
+# def reporteBD():
+#     if 'conectado' in session:
+#         return generarReporteExcel()
+#     else:
+#         flash('primero debes iniciar sesión.', 'error')
+#         return redirect(url_for('inicio'))

@@ -29,3 +29,12 @@ function eliminarProceso(id_proceso) {
     }
   }
 }
+
+function eliminarCliente(id_cliente , foto_cliente) {
+  if (confirm("¿Estas seguro que deseas Eliminar el Cliente?")) {
+    let url = `/borrar-cliente/${id_cliente}/${foto_cliente}`;
+    if (url) {
+      window.location.href = url;
+    }
+  }
+}

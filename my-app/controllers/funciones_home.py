@@ -310,8 +310,8 @@ def procesar_actualizacion_form(data):
                         WHERE id_empleado = %s
                     """
                     values = (documento,nombre_empleado, apellido_empleado, tipo_empleado,
-                              telefono_empleado, email_empleado, cargo,
-                               fotoForm, id_empleado)
+                                telefono_empleado, email_empleado, cargo,
+                                fotoForm, id_empleado)
                 else:
                     querySQL = """
                         UPDATE tbl_empleados
@@ -326,8 +326,8 @@ def procesar_actualizacion_form(data):
                         WHERE id_empleado = %s
                     """
                     values = (documento, nombre_empleado, apellido_empleado, tipo_empleado,
-                              telefono_empleado, email_empleado, cargo,
-                               id_empleado)
+                                telefono_empleado, email_empleado, cargo,
+                                id_empleado)
 
                 cursor.execute(querySQL, values)
                 conexion_MySQLdb.commit()
@@ -352,7 +352,7 @@ def lista_usuariosBD():
         return []
 
 
-# Eliminar uEmpleado
+# Eliminar Empleado
 def eliminarEmpleado(id_empleado, foto_empleado):
     try:
         with connectionBD() as conexion_MySQLdb:
@@ -418,7 +418,7 @@ def procesar_form_proceso(dataForm):
         return f'Se produjo un error en procesar_form_proceso: {str(e)}'
 
 
-# def procesar_imagen_perfil(foto):
+# def procesar_imagen_cliente(foto):
 #     try:
 #         # Nombre original del archivo
 #         filename = secure_filename(foto.filename)
@@ -681,4 +681,338 @@ def eliminarProceso(id_proceso):
         return resultado_eliminar
     except Exception as e:
         print(f"Error en eliminarProceso : {e}")
+        return []
+    
+    
+    
+    
+
+
+### CLIENTES    
+def procesar_form_cliente(dataForm, foto_perfil_cliente):
+    # Formateando documento
+    documento_sin_puntos = re.sub('[^0-9]+', '', dataForm['documento'])
+    # convertir documento a INT
+    documento = int(documento_sin_puntos)
+
+    result_foto_cliente = procesar_imagen_cliente(foto_perfil_cliente)
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+
+                sql = "INSERT INTO tbl_clientes (tipo_documento,documento,nombre_cliente, telefono_cliente, email_cliente, foto_cliente) VALUES (%s, %s, %s, %s, %s, %s)"
+
+                # Creando una tupla con los valores del INSERT
+                valores = (dataForm['tipo_documento'],documento,dataForm['nombre_cliente'],dataForm['telefono_cliente'], dataForm['email_cliente'], result_foto_cliente)
+                cursor.execute(sql, valores)
+
+                conexion_MySQLdb.commit()
+                resultado_insert = cursor.rowcount
+                return resultado_insert
+
+    except Exception as e:
+        return f'Se produjo un error en procesar_form_cliente: {str(e)}'
+
+
+def procesar_imagen_cliente(foto):
+    try:
+        # Nombre original del archivo
+        filename = secure_filename(foto.filename)
+        extension = os.path.splitext(filename)[1]
+
+        # Creando un string de 50 caracteres
+        nuevoNameFile = (uuid.uuid4().hex + uuid.uuid4().hex)[:100]
+        nombreFile = nuevoNameFile + extension
+
+        # Construir la ruta completa de subida del archivo
+        basepath = os.path.abspath(os.path.dirname(__file__))
+        upload_dir = os.path.join(basepath, f'../static/fotos_clientes/')
+
+        # Validar si existe la ruta y crearla si no existe
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+            # Dando permiso a la carpeta
+            os.chmod(upload_dir, 0o755)
+
+        # Construir la ruta completa de subida del archivo
+        upload_path = os.path.join(upload_dir, nombreFile)
+        foto.save(upload_path)
+
+        return nombreFile
+
+    except Exception as e:
+        print("Error al procesar archivo:", e)
+        return []
+
+
+# Lista de Clientes
+def sql_lista_clientesBD():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = (f"""
+                    SELECT 
+                        e.id_cliente,                        
+                        e.tipo_documento,
+                        e.documento,
+                        e.nombre_cliente, 
+                        e.telefono_cliente,                        
+                        e.foto_cliente,
+                        e.email_cliente                        
+                    FROM tbl_clientes AS e
+                    ORDER BY e.id_cliente DESC
+                    """)
+                cursor.execute(querySQL,)
+                clientesBD = cursor.fetchall()
+        return clientesBD
+    except Exception as e:
+        print(
+            f"Errro en la función sql_lista_empleadosBD: {e}")
+        return None
+
+
+# Detalles del Cliente
+def sql_detalles_clientesBD(idCliente):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""
+                    SELECT 
+                        e.id_cliente,
+                        e.tipo_documento,
+                        e.documento,
+                        e.nombre_cliente,                      
+                        e.telefono_cliente, 
+                        e.email_cliente,
+                        e.foto_cliente,
+                        DATE_FORMAT(e.fecha_registro, '%Y-%m-%d %h:%i %p') AS fecha_registro
+                    FROM tbl_clientes AS e
+                    WHERE id_cliente =%s
+                    ORDER BY e.id_cliente DESC
+                    """)
+                cursor.execute(querySQL, (idCliente,))
+                clientesBD = cursor.fetchone()
+        return clientesBD
+    except Exception as e:
+        print(
+            f"Errro en la función sql_detalles_clientesBD: {e}")
+        return None
+
+
+# # Funcion Empleados Informe (Reporte)
+# def clientesReporte():
+#     try:
+#         with connectionBD() as conexion_MySQLdb:
+#             with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+#                 querySQL = ("""
+#                     SELECT 
+#                         e.id_cliente,
+#                         e.tipo_documento,
+#                         e.documento,
+#                         e.nombre_cliente,                      
+#                         e.telefono_cliente, 
+#                         e.email_cliente,
+#                         e.foto_cliente,
+#                         DATE_FORMAT(e.fecha_registro, '%Y-%m-%d %h:%i %p') AS fecha_registro
+#                     FROM tbl_clientes AS e
+#                     ORDER BY e.id_cliente DESC
+#                     """)
+#                 cursor.execute(querySQL,)
+#                 clientesBD = cursor.fetchall()
+#         return clientesBD
+#     except Exception as e:
+#         print(
+#             f"Errro en la función clientesReporte: {e}")
+#         return None
+
+
+# def generarReporteExcel():
+#     dataEmpleados = clienteReporte()
+#     wb = openpyxl.Workbook()
+#     hoja = wb.active
+
+#     # Agregar la fila de encabezado con los títulos
+#     cabeceraExcel = ("Tipo Docuemnto","Documento","Nombre", 
+#                      "Telefono", "Email", "Fecha de Ingreso")
+
+#     hoja.append(cabeceraExcel)
+
+#     # Formato para números en moneda colombiana y sin decimales
+#     formato_moneda_colombiana = '#,##0'
+
+#     # Agregar los registros a la hoja
+#     for registro in dataEmpleados:
+#         documento = registro['documento']
+#         nombre_empleado = registro['nombre_empleado']
+#         apellido_empleado = registro['apellido_empleado']
+#         tipo_empleado = registro['tipo_empleado']
+#         telefono_empleado = registro['telefono_empleado']
+#         email_empleado = registro['email_empleado']
+#         cargo = registro['cargo']
+#         fecha_registro = registro['fecha_registro']
+
+#         # Agregar los valores a la hoja
+#         hoja.append((documento,nombre_empleado, apellido_empleado, tipo_empleado, telefono_empleado, email_empleado, cargo,
+#                       fecha_registro))
+
+#         # Itera a través de las filas y aplica el formato a la columna G
+#         for fila_num in range(2, hoja.max_row + 1):
+#             columna = 7  # Columna G
+#             celda = hoja.cell(row=fila_num, column=columna)
+#             celda.number_format = formato_moneda_colombiana
+
+#     fecha_actual = datetime.datetime.now()
+#     archivoExcel = f"Reporte_empleados_{fecha_actual.strftime('%Y_%m_%d')}.xlsx"
+#     carpeta_descarga = "../static/downloads-excel"
+#     ruta_descarga = os.path.join(os.path.dirname(
+#         os.path.abspath(__file__)), carpeta_descarga)
+
+#     if not os.path.exists(ruta_descarga):
+#         os.makedirs(ruta_descarga)
+#         # Dando permisos a la carpeta
+#         os.chmod(ruta_descarga, 0o755)
+
+#     ruta_archivo = os.path.join(ruta_descarga, archivoExcel)
+#     wb.save(ruta_archivo)
+
+#     # Enviar el archivo como respuesta HTTP
+#     return send_file(ruta_archivo, as_attachment=True)
+
+
+def buscarClienteBD(search):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+                querySQL = ("""
+                        SELECT 
+                            e.id_cliente,
+                            e.tipo_documento,
+                            e.documento,
+                            e.nombre_cliente, 
+                            e.email_cliente,            
+                        FROM tbl_clientes AS e
+                        WHERE e.nombre_cliente LIKE %s  
+                        ORDER BY e.id_cliente DESC
+                    """)
+                search_pattern = f"%{search}%"  # Agregar "%" alrededor del término de búsqueda
+                mycursor.execute(querySQL, (search_pattern,))
+                resultado_busqueda = mycursor.fetchall()
+                return resultado_busqueda
+
+    except Exception as e:
+        print(f"Ocurrió un error en def buscarClienteBD: {e}")
+        return []
+
+
+def buscarClienteUnico(id):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+                querySQL = ("""
+                        SELECT 
+                            e.id_cliente,
+                            e.documento,
+                            e.nombre_cliente, 
+                            e.tipo_documento,
+                            e.telefono_cliente,
+                            e.email_cliente,
+                            e.foto_cliente
+                        FROM tbl_clientes AS e
+                        WHERE e.id_cliente =%s LIMIT 1
+                    """)
+                mycursor.execute(querySQL, (id,))
+                cliente = mycursor.fetchone()
+                return cliente
+
+    except Exception as e:
+        print(f"Ocurrió un error en def buscarClienteUnico: {e}")
+        return []
+
+
+def procesar_actualizacion_cliente(data):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                tipo_documento = data.form['tipo_documento']
+                nombre_cliente = data.form['nombre_cliente']               
+                telefono_cliente = data.form['telefono_cliente']
+                email_cliente = data.form['email_cliente']
+                documento_sin_puntos = re.sub(
+                    '[^0-9]+', '', data.form['documento'])
+                documento = int(documento_sin_puntos)
+                id_cliente = data.form['id_cliente']
+                if data.files['foto_cliente']:
+                    file = data.files['foto_cliente']
+                    fotoForm = procesar_imagen_cliente(file)
+                    querySQL = """
+                        UPDATE tbl_clientes
+                        SET 
+                            tipo_documento = %s,
+                            nombre_cliente = %s,                                                       
+                            telefono_cliente = %s,
+                            email_cliente = %s,
+                            documento = %s,                            
+                            foto_cliente = %s
+                        WHERE id_cliente = %s
+                    """
+                    values = (tipo_documento,nombre_cliente,telefono_cliente, email_cliente,documento,
+                                fotoForm, id_cliente)
+                else:
+                    querySQL = """
+                        UPDATE tbl_clientes
+                        SET 
+                            tipo_documento = %s,
+                            nombre_cliente = %s,                                                       
+                            telefono_cliente = %s,
+                            email_cliente = %s,
+                            documento = %s                            
+                        WHERE id_cliente = %s
+                    """
+                    values = (tipo_documento,nombre_cliente,telefono_cliente, email_cliente,documento,id_cliente)
+
+                cursor.execute(querySQL, values)
+                conexion_MySQLdb.commit()
+
+        return cursor.rowcount or []
+    except Exception as e:
+        print(f"Ocurrió un error en procesar_actualizacion_cliente: {e}")
+        return None
+
+
+# Lista de Usuarios creados
+def lista_usuariosBD():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "SELECT id, name_surname, email_user, created_user FROM users"
+                cursor.execute(querySQL,)
+                usuariosBD = cursor.fetchall()
+        return usuariosBD
+    except Exception as e:
+        print(f"Error en lista_usuariosBD : {e}")
+        return []
+
+
+# Eliminar Cliente
+def eliminarCliente(id_cliente, foto_cliente):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "DELETE FROM tbl_clientes WHERE id_cliente=%s"
+                cursor.execute(querySQL, (id_cliente,))
+                conexion_MySQLdb.commit()
+                resultado_eliminar = cursor.rowcount
+
+                if resultado_eliminar:
+                    # Eliminadon foto_empleado desde el directorio
+                    basepath = path.dirname(__file__)
+                    url_File = path.join(
+                        basepath, '../static/fotos_clientes', foto_cliente)
+
+                    if path.exists(url_File):
+                        remove(url_File)  # Borrar foto desde la carpeta
+
+        return resultado_eliminar
+    except Exception as e:
+        print(f"Error en eliminarCliente : {e}")
         return []

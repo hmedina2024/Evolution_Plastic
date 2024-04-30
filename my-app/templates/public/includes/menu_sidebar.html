@@ -18,33 +18,42 @@
 
   <div class="menu-inner-shadow"></div>
   <ul class="menu-inner py-5">
-    <li
-      class="menu-item {% if request.path == '/registrar-empleado' %} active {% endif %}">
-      <a href="{{ url_for('viewFormEmpleado') }}" class="menu-link">
-        <i class="menu-icon bi bi-person-bounding-box"></i>
-        <div data-i18n="Basic">Registrar Empleado</div>
+    <li class="nav-item dropdown {% if request.path in ['/registrar-empleado', '/lista-de-empleados', '/registrar-proceso', '/lista-de-procesos', '/registrar-cliente', '/lista-de-clientes'] %} active{% endif %}">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-gear"></i>  Administrar
       </a>
-    </li>
-    <li
-      class="menu-item {% if request.path == '/lista-de-empleados' %} active{% endif %}">
-      <a href="/lista-de-empleados" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
-        <div data-i18n="Boxicons">Lista de Empleados</div>
-      </a>
-    </li>
-    <li
-      class="menu-item {% if request.path == '/registrar-proceso' %} active {% endif %}">
-      <a href="{{ url_for('viewFormProceso') }}" class="menu-link">
-        <i class="menu-icon bi bi-person-bounding-box"></i>
-        <div data-i18n="Basic">Registrar Proceso</div>
-      </a>
-    </li>
-    <li
-      class="menu-item {% if request.path == '/lista-de-procesos' %} active{% endif %}">
-      <a href="/lista-de-procesos" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
-        <div data-i18n="Boxicons">Lista de Procesos</div>
-      </a>
+      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li class="menu-item {% if request.path == '/registrar-empleado' %} active {% endif %}">
+          <a href="{{ url_for('viewFormEmpleado') }}" class="dropdown-item">
+            <i class="bi bi-person-bounding-box"></i> Registrar Empleado
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/lista-de-empleados' %} active{% endif %}">
+          <a href="/lista-de-empleados" class="dropdown-item">
+            <i class="bi bi-person-lines-fill"></i> Lista de Empleados
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/registrar-proceso' %} active {% endif %}">
+          <a href="{{ url_for('viewFormProceso') }}" class="dropdown-item">
+            <i class="bi bi-gear"></i> Registrar Proceso
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/lista-de-procesos' %} active{% endif %}">
+          <a href="/lista-de-procesos" class="dropdown-item">
+            <i class="bi bi-gear-fill"></i> Lista de Procesos
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/registrar-cliente' %} active {% endif %}">
+          <a href="{{ url_for('viewFormCliente') }}" class="dropdown-item">
+            <i class="bi bi-person-vcard"></i> Registrar Cliente
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/lista-de-clientes' %} active{% endif %}">
+          <a href="/lista-de-clientes" class="dropdown-item">
+            <i class="bi bi-person-vcard-fill"></i> Lista de Clientes
+          </a>
+        </li>
+      </ul>
     </li>
     <li
       class="menu-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
