@@ -38,3 +38,12 @@ function eliminarCliente(id_cliente , foto_cliente) {
     }
   }
 }
+
+function eliminarActividad(id_actividad) {
+  if (confirm("¿Estas seguro que deseas Eliminar la actividad?")) {
+    let url = `/borrar-actividad/${id_actividad}`;
+    if (url) {
+      window.location.href = url;
+    }
+  }
+}

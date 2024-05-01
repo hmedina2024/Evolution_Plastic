@@ -1016,3 +1016,256 @@ def eliminarCliente(id_cliente, foto_cliente):
     except Exception as e:
         print(f"Error en eliminarCliente : {e}")
         return []
+
+
+
+
+
+
+
+
+
+
+
+
+
+### ACTIVIDADES    
+def procesar_form_actividad(dataForm):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+
+                sql = "INSERT INTO tbl_actividades (codigo_actividad, nombre_actividad, descripcion_actividad) VALUES (%s, %s, %s)"
+
+                # Creando una tupla con los valores del INSERT
+                valores = (dataForm['cod_actividad'], dataForm['nombre_actividad'], dataForm['descripcion_actividad'])
+                cursor.execute(sql, valores)
+
+                conexion_MySQLdb.commit()
+                resultado_insert = cursor.rowcount
+                return resultado_insert
+
+    except Exception as e:
+        return f'Se produjo un error en procesar_form_actividad: {str(e)}'
+
+
+# Lista de Actividades
+def sql_lista_actividadesBD():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = """
+                    SELECT 
+                        a.id_actividad,
+                        a.codigo_actividad,
+                        a.nombre_actividad,
+                        a.descripcion_actividad,                        
+                        a.fecha_registro
+                    FROM tbl_actividades AS a
+                    ORDER BY a.id_actividad DESC
+                    """
+                cursor.execute(querySQL)
+                actividadesBD = cursor.fetchall()
+        return actividadesBD
+    except Exception as e:
+        print(f"Error en la función sql_lista_actividadesBD: {e}")
+        return None
+
+
+# Detalles de la actividad
+def sql_detalles_actividadesBD(id_actividad):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""
+                    SELECT 
+                        a.id_actividad,
+                        a.codigo_actividad,
+                        a.nombre_actividad,
+                        a.descripcion_actividad,
+                        DATE_FORMAT(a.fecha_registro, '%Y-%m-%d %h:%i %p') AS fecha_registro
+                    FROM tbl_actividades AS a
+                    WHERE codigo_actividad =%s
+                    ORDER BY a.id_actividad DESC
+                    """)
+                cursor.execute(querySQL, (id_actividad,))
+                actividadBD = cursor.fetchone()
+        return actividadBD
+    except Exception as e:
+        print(
+            f"Errro en la función sql_detalles_actividadesBD: {e}")
+        return None
+
+
+# # Funcion Empleados Informe (Reporte)
+# def empleadosReporte():
+#     try:
+#         with connectionBD() as conexion_MySQLdb:
+#             with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+#                 querySQL = ("""
+#                     SELECT 
+#                         e.id_empleado,
+#                         e.documento,
+#                         e.nombre_empleado, 
+#                         e.apellido_empleado,                        
+#                         e.email_empleado,
+#                         e.telefono_empleado,
+#                         e.cargo,
+#                         DATE_FORMAT(e.fecha_registro, '%d de %b %Y %h:%i %p') AS fecha_registro,
+#                         CASE
+#                             WHEN e.tipo_empleado = 1 THEN 'Directo'
+#                             ELSE 'Temporal'
+#                         END AS tipo_empleado
+#                     FROM tbl_empleados AS e
+#                     ORDER BY e.id_empleado DESC
+#                     """)
+#                 cursor.execute(querySQL,)
+#                 empleadosBD = cursor.fetchall()
+#         return empleadosBD
+#     except Exception as e:
+#         print(
+#             f"Errro en la función empleadosReporte: {e}")
+#         return None
+
+
+# def generarReporteExcel():
+#     dataEmpleados = empleadosReporte()
+#     wb = openpyxl.Workbook()
+#     hoja = wb.active
+
+#     # Agregar la fila de encabezado con los títulos
+#     cabeceraExcel = ("Documento","Nombre", "Apellido", "Tipo Empleado",
+#                      "Telefono", "Email", "Profesión", "Fecha de Ingreso")
+
+#     hoja.append(cabeceraExcel)
+
+#     # Formato para números en moneda colombiana y sin decimales
+#     formato_moneda_colombiana = '#,##0'
+
+#     # Agregar los registros a la hoja
+#     for registro in dataEmpleados:
+#         documento = registro['documento']
+#         nombre_empleado = registro['nombre_empleado']
+#         apellido_empleado = registro['apellido_empleado']
+#         tipo_empleado = registro['tipo_empleado']
+#         telefono_empleado = registro['telefono_empleado']
+#         email_empleado = registro['email_empleado']
+#         cargo = registro['cargo']
+#         fecha_registro = registro['fecha_registro']
+
+#         # Agregar los valores a la hoja
+#         hoja.append((documento,nombre_empleado, apellido_empleado, tipo_empleado, telefono_empleado, email_empleado, cargo,
+#                       fecha_registro))
+
+#         # Itera a través de las filas y aplica el formato a la columna G
+#         for fila_num in range(2, hoja.max_row + 1):
+#             columna = 7  # Columna G
+#             celda = hoja.cell(row=fila_num, column=columna)
+#             celda.number_format = formato_moneda_colombiana
+
+#     fecha_actual = datetime.datetime.now()
+#     archivoExcel = f"Reporte_empleados_{fecha_actual.strftime('%Y_%m_%d')}.xlsx"
+#     carpeta_descarga = "../static/downloads-excel"
+#     ruta_descarga = os.path.join(os.path.dirname(
+#         os.path.abspath(__file__)), carpeta_descarga)
+
+#     if not os.path.exists(ruta_descarga):
+#         os.makedirs(ruta_descarga)
+#         # Dando permisos a la carpeta
+#         os.chmod(ruta_descarga, 0o755)
+
+#     ruta_archivo = os.path.join(ruta_descarga, archivoExcel)
+#     wb.save(ruta_archivo)
+
+#     # Enviar el archivo como respuesta HTTP
+#     return send_file(ruta_archivo, as_attachment=True)
+
+
+# def buscarProcesoBD(search):
+#     try:
+#         with connectionBD() as conexion_MySQLdb:
+#             with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+#                 querySQL = ("""
+#                         SELECT 
+#                         p.codigo_proceso,
+#                         p.nombre_proceso,
+#                         p.descripcion_proceso,                        
+#                         p.fecha_registro
+#                     FROM tbl_procesos AS p
+#                     WHERE p.codigo_proceso LIKE %s 
+#                     ORDER BY p.codigo_proceso DESC
+#                     """)
+#                 search_pattern = f"%{search}%"  # Agregar "%" alrededor del término de búsqueda
+#                 mycursor.execute(querySQL, (search_pattern,))
+#                 resultado_busqueda = mycursor.fetchall()
+#                 return resultado_busqueda
+
+#     except Exception as e:
+#         print(f"Ocurrió un error en def buscarProcesoBD: {e}")
+#         return []
+
+
+def buscarActividadUnico(id):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+                querySQL = ("""
+                        SELECT 
+                            a.id_actividad,
+                            a.codigo_actividad,
+                            a.nombre_actividad,
+                            a.descripcion_actividad,                        
+                            a.fecha_registro
+                        FROM tbl_actividades AS a
+                        WHERE a.id_actividad =%s LIMIT 1
+                    """)
+                mycursor.execute(querySQL, (id,))
+                actividad = mycursor.fetchone()
+                return actividad
+
+    except Exception as e:
+        print(f"Ocurrió un error en def buscarActividadUnico: {e}")
+        return []
+
+
+def procesar_actualizar_actividad(data):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                codigo_actividad = data.form['codigo_actividad']
+                nombre_actividad = data.form['nombre_actividad']
+                descripcion_actividad = data.form['descripcion_actividad']
+                id_actividad = data.form['id_actividad']             
+                querySQL = """
+                    UPDATE tbl_actividades
+                    SET 
+                        codigo_actividad = %s,
+                        nombre_actividad = %s,
+                        descripcion_actividad = %s
+                    WHERE id_actividad = %s
+                """
+                values = (codigo_actividad, nombre_actividad, descripcion_actividad,id_actividad)
+
+                cursor.execute(querySQL, values)
+                conexion_MySQLdb.commit()
+
+        return cursor.rowcount or []
+    except Exception as e:
+        print(f"Ocurrió un error en procesar_actualizar_actividad: {e}")
+        return None
+
+
+# Eliminar Actividades
+def eliminarActividad(id_actividad):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "DELETE FROM tbl_actividades WHERE id_actividad=%s"
+                cursor.execute(querySQL, (id_actividad,))
+                conexion_MySQLdb.commit()
+                resultado_eliminar = cursor.rowcount
+        return resultado_eliminar
+    except Exception as e:
+        print(f"Error en eliminaractividad : {e}")
+        return []
+    

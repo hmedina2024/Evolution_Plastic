@@ -295,12 +295,12 @@ def detalleCliente(idCliente=None):
         return redirect(url_for('inicio'))
 
 
-# Buscadon de clientes
+# Buscador de clientes
 @app.route("/buscando-cliente", methods=['POST'])
 def viewBuscarClienteBD():
-    resultadoBusqueda = buscarClienteBD(request.json['busqueda'])
-    if resultadoBusqueda:
-        return render_template('public/clientes/resultado_busqueda_cliente.html', dataBusqueda=resultadoBusqueda)
+    resultadoBusquedaCliente = buscarClienteBD(request.json['busqueda'])
+    if resultadoBusquedaCliente:
+        return render_template('public/clientes/resultado_busqueda_cliente.html', dataBusqueda=resultadoBusquedaCliente)
     else:
         return jsonify({'fin': 0})
 
@@ -336,6 +336,109 @@ def borrarCliente(id_cliente, foto_cliente):
 
 
 # @app.route("/descargar-informe-clientes/", methods=['GET'])
+# def reporteBD():
+#     if 'conectado' in session:
+#         return generarReporteExcel()
+#     else:
+#         flash('primero debes iniciar sesión.', 'error')
+#         return redirect(url_for('inicio'))
+
+
+
+
+
+
+#### ACTIVIDADES
+@app.route('/registrar-actividad', methods=['GET'])
+def viewFormActividad():
+    if 'conectado' in session:
+        return render_template('public/actividades/form_actividades.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+
+@app.route('/form-registrar-actividad', methods=['POST'])
+def formActividad():
+    if 'conectado' in session:
+        resultado = procesar_form_actividad(request.form)
+        if resultado:
+            return redirect(url_for('lista_actividades'))
+        else:
+            flash('La Actividad NO fue registrada.', 'error')
+            return render_template('public/actividades/form_actividades.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route('/lista-de-actividades', methods=['GET'])
+def lista_actividades():
+    if 'conectado' in session:
+        return render_template('public/actividades/lista_actividades.html', actividades=sql_lista_actividadesBD())
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route("/detalles-actividad/", methods=['GET'])
+@app.route("/detalles-actividad/<string:codigo_actividad>", methods=['GET'])
+def detalleActividad(codigo_actividad=None):
+    if 'conectado' in session:
+        # Verificamos si el parámetro codigo_actividad es None o no está presente en la URL
+        if codigo_actividad is None:
+            return redirect(url_for('inicio'))
+        else:
+            detalle_actividad = sql_detalles_actividadesBD(codigo_actividad) or []
+            return render_template('public/actividades/detalles_actividad.html', detalle_actividad=detalle_actividad)
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Buscador de proceso
+# @app.route("/buscando-proceso", methods=['POST'])
+# def viewBuscarProcesoBD():
+#     resultadoBusqueda2 = buscarProcesoBD(request.json['busqueda'])
+#     if resultadoBusqueda2:
+#         return render_template('public/procesos/resultado_busqueda_proceso.html', dataBusqueda2=resultadoBusqueda2)
+#     else:   
+#         return jsonify({'fin': 0})
+
+
+@app.route("/editar-actividad/<int:id>", methods=['GET'])
+def viewEditaractividad(id):
+    if 'conectado' in session:
+        respuestaActividad = buscarActividadUnico(id)
+        if respuestaActividad:
+            return render_template('public/actividades/form_actividad_update.html', respuestaActividad=respuestaActividad)
+        else:
+            flash('La Actividad no existe.', 'error')
+            return redirect(url_for('inicio'))
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Recibir formulario para actulizar informacion de proceso
+@app.route('/actualizar-actividad', methods=['POST'])
+def actualizarActividad():
+    resultData = procesar_actualizar_actividad(request)
+    if resultData:
+        return redirect(url_for('lista_actividades'))
+    else:
+        # Manejar el caso en que resultData sea falso
+        return "Ocurrió un error al actualizar la actividad"
+
+@app.route('/borrar-actividad/<int:id_actividad>', methods=['GET'])
+def borrarActividad(id_actividad):
+    resp = eliminarActividad(id_actividad)
+    if resp:
+        flash('La Actividad fue eliminado correctamente', 'success')
+        return redirect(url_for('lista_actividades'))
+
+
+# @app.route("/descargar-informe-empleados/", methods=['GET'])
 # def reporteBD():
 #     if 'conectado' in session:
 #         return generarReporteExcel()
