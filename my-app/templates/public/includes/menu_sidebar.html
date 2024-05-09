@@ -18,33 +18,22 @@
 
   <div class="menu-inner-shadow"></div>
   <ul class="menu-inner py-5">
-    <li
-      class="menu-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
-      <a href="/descargar-informe-empleados" class="menu-link">
-        <i class="menu-icon bi bi-file-earmark-spreadsheet-fill"></i>
-        <div data-i18n="Tables">Reportes</div>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-ui-checks-grid"></i>  Control
       </a>
-    </li>
-    <li
-      class="menu-item {% if request.path == '/seguimietno_diario' %} active {% endif %}">
-      <a href="/seguimietno_diario" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
-        <div data-i18n="Tables">Seguimiento Diario</div>
-      </a>
-    </li>
-    <li
-      class="menu-item {% if request.path == '/lista-de-usuarios' %} active {% endif %}">
-      <a href="/lista-de-usuarios" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
-        <div data-i18n="Tables">Lista de Usuarios</div>
-      </a>
-    </li>
-    <li
-      class="menu-item {% if request.path == '/mi-perfil' %} active {% endif %}">
-      <a href="/mi-perfil" class="menu-link">
-        <i class="menu-icon bi bi-person-fill-gear"></i>
-        <div data-i18n="Tables">Mi Perfil</div>
-      </a>
+      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li class="menu-item {% if request.path == '/registrar-operacion' %} active {% endif %}">
+          <a href="{{ url_for('viewFormOperacion') }}" class="dropdown-item">
+            <i class="bi bi-pass"></i> Registro Diario
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/lista-de-operaciones' %} active{% endif %}">
+          <a href="/lista-de-operaciones" class="dropdown-item">
+            <i class="bi bi-pass-fill"></i> Lista de Registros
+          </a>
+        </li>
+      </ul>
     </li>
     <li class="nav-item dropdown {% if request.path in ['/registrar-empleado', '/lista-de-empleados', '/registrar-proceso', '/lista-de-procesos', '/registrar-cliente', '/lista-de-clientes'] %} active{% endif %}">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -94,6 +83,27 @@
       </li>
       </ul>
     </li>
+    <li
+      class="menu-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
+      <a href="/descargar-informe-empleados" class="menu-link">
+        <i class="menu-icon bi bi-file-earmark-spreadsheet-fill"></i>
+        <div data-i18n="Tables">Reportes</div>
+      </a>
+    </li>    
+    <li
+      class="menu-item {% if request.path == '/lista-de-usuarios' %} active {% endif %}">
+      <a href="/lista-de-usuarios" class="menu-link">
+        <i class="menu-icon bi bi-person-lines-fill"></i>
+        <div data-i18n="Tables">Lista de Usuarios</div>
+      </a>
+    </li>
+    <li
+      class="menu-item {% if request.path == '/mi-perfil' %} active {% endif %}">
+      <a href="/mi-perfil" class="menu-link">
+        <i class="menu-icon bi bi-person-fill-gear"></i>
+        <div data-i18n="Tables">Mi Perfil</div>
+      </a>
+    </li>    
     <br>
     <br>
     <li class="menu-item">

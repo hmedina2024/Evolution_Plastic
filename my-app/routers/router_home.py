@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, flash, redirect, url_for, session,  jsonify
+from flask import render_template, request, flash, redirect, url_for, session,  jsonify, Blueprint
 from mysql.connector.errors import Error
 
 
@@ -347,7 +347,6 @@ def borrarCliente(id_cliente, foto_cliente):
 
 
 
-
 #### ACTIVIDADES
 @app.route('/registrar-actividad', methods=['GET'])
 def viewFormActividad():
@@ -396,16 +395,6 @@ def detalleActividad(codigo_actividad=None):
         return redirect(url_for('inicio'))
 
 
-# Buscador de proceso
-# @app.route("/buscando-proceso", methods=['POST'])
-# def viewBuscarProcesoBD():
-#     resultadoBusqueda2 = buscarProcesoBD(request.json['busqueda'])
-#     if resultadoBusqueda2:
-#         return render_template('public/procesos/resultado_busqueda_proceso.html', dataBusqueda2=resultadoBusqueda2)
-#     else:   
-#         return jsonify({'fin': 0})
-
-
 @app.route("/editar-actividad/<int:id>", methods=['GET'])
 def viewEditaractividad(id):
     if 'conectado' in session:
@@ -438,10 +427,50 @@ def borrarActividad(id_actividad):
         return redirect(url_for('lista_actividades'))
 
 
-# @app.route("/descargar-informe-empleados/", methods=['GET'])
-# def reporteBD():
-#     if 'conectado' in session:
-#         return generarReporteExcel()
-#     else:
-#         flash('primero debes iniciar sesión.', 'error')
-#         return redirect(url_for('inicio'))
+
+
+
+
+
+#### OPERACIóN DIARIA
+@app.route('/registrar-operacion', methods=['GET', 'POST'])
+def viewFormOperacion():
+    if request.method == 'POST':
+        id_empleado = request.form.get('id_empleado')
+        nombre_empleado = obtener_nombre_empleado(id_empleado)
+        nombre = nombre_empleado['nombre_empleado']
+        return jsonify(nombre_empleado=nombre_empleado)
+    else:
+        id_empleados = obtener_id_empleados()
+        print("Nombre del empleado:", id_empleados)
+        if 'conectado' in session:
+            nombre_proceso = obtener_proceso()
+            print(nombre_proceso)
+            nombre_actividad = obtener_actividad()  # Llamar a la nueva función
+            print(nombre_actividad)  # Verificar que obtienes los datos correctos
+            return render_template('public/control/form_operaciones.html', nombre_proceso=nombre_proceso, id_empleados=id_empleados, nombre_actividad=nombre_actividad)
+        else:
+            flash('Primero debes iniciar sesión.', 'error')
+            return redirect(url_for('inicio'))
+        
+        
+@app.route('/lista-de-operaciones', methods=['GET'])
+def lista_operaciones():
+    if 'conectado' in session:
+        return render_template('public/control/lista_operaciones.html', operaciones=sql_lista_operacionesBD())
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+@app.route('/form-registrar-operacion', methods=['POST'])
+def formOperacion():
+    if 'conectado' in session:
+        resultado = procesar_form_operacion(request.form)
+        if resultado:
+            return redirect(url_for('lista_operaciones'))
+        else:
+            flash('La Operacion NO fue registrada.', 'error')
+            return render_template('public/control/form_operaciones.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))

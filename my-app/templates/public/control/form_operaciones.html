@@ -1,0 +1,186 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+<link rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css" />
+{% endblock %}
+<!--Inicio del block-->
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">NUEVO REGISTRO</h3>
+      <hr />
+    </div>
+  </div>
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <form
+        class="form-horizontal mx-auto"
+        method="POST"
+        action="/form-registrar-operacion"
+        autocomplete="off"
+        enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-md-4">
+              <label for="id_empleado" class="form-label">
+                Codigo empleado
+              </label>
+              <select name="id_empleado" id="id_empleado" class="form-control"
+                title="Seleccionar Id Empleado" data-live-search="true"
+                data-hide-disabled="true">
+                {% for empleado in id_empleados %}
+                <option value="{{ empleado }}">{{ empleado }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label for="nombre_empleado" class="form-label">
+                Nombre Empleado
+              </label>
+              <input class="form-control" type="text" name="nombre_empleado"
+                id="nombre_empleado"
+                value="{{ nombre_empleado }}"
+                required readonly />
+            </div>
+            <div class="row mt-4">
+              <div class="col-md-3">
+                <label for="nombre_proceso" class="form-label" required>
+                  PROCESO
+                </label>
+                <select name="nombre_proceso" id="nombre_proceso" class="form-control"
+                  title="Seleccionar Proceso" data-live-search="true">
+                  {% for proceso in nombre_proceso %}
+                  <option value="{{ proceso }}">{{ proceso}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="nombre_actividad" class="form-label">
+                  Actividad
+                </label>
+                <select name="nombre_actividad" id="nombre_actividad" class="form-control"
+                  title="Seleccionar Actividad" data-live-search="true">
+                  {% for actividad in nombre_actividad %}
+                  <option value="{{ actividad }}">{{ actividad}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!-- <div class="col-md-3">
+                <label for="orden_produccion" class="form-label">
+                  Orden de Produccion
+                </label>
+                <select
+                  class="form-select"
+                  name="orden_produccion"
+                  aria-label="Default select example">
+                  <option selected>Seleccione</option>
+                  <option value="NIT">MD</option>
+                  <option value="Cedula">MCD</option>
+                </select>
+              </div> -->
+              <div class="col-md-3">
+                <label for="documento" class="form-label">
+                  Cantidad Realizada
+                </label>
+                <input
+                  class="form-control"
+                  type="INT"
+                  name="cantidad"
+                  id="documento"
+                  required />
+              </div>
+          <br />
+          <br />
+          <br />
+          <br />
+          <div class="row mt-2">            
+            <div class="col-md-4">
+              <label for="hora_inicio" class="form-label">
+                Fecha y Hora Inicio
+              </label>
+              <input
+                class="form-control"
+                type="datetime-local"
+                name="hora_inicio"
+                required />
+            </div>
+            <div class="col-md-4">
+              <label for="hora_fin" class="form-label">
+                Fecha y Hora Fin
+              </label>
+              <input
+                class="form-control"
+                type="datetime-local"
+                name="hora_fin"
+                required />
+            </div>            
+            <div class="col-md-12">
+              <br />
+              <label for="novedades" class="form-label">
+                NOVEDADES
+              </label>
+              <textarea
+                class="form-control"
+                name="novedades"
+                rows="2"
+                required></textarea>
+            </div>
+          </div>
+          <div class="mb-3 mt-4 text-center">
+            <button type="submit" class="btn rounded-pill btn-primary">
+              Guardar registro ahora
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block customJS %}
+<script
+  src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script
+  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+<script>
+  $(document).ready(function (){
+        $("#id_empleado").selectpicker();
+        $("#nombre_proceso").selectpicker();
+        $("#nombre_actividad").selectpicker();
+
+        // Manejar el evento de cambio en el campo id_empleado
+        $("#id_empleado").change(function() {
+            var id_empleado = $(this).val();
+            
+
+            // Realizar una solicitud AJAX para obtener el nombre del empleado
+            $.ajax({
+                url: "/registrar-operacion",
+                method: "POST",
+                data: { id_empleado: id_empleado },
+                dataType: "json",
+                success: function (data) {
+                  console.log(data.nombre_empleado['nombre_empleado']);
+                    // Actualizar el valor del campo nombre_empleado con el nombre obtenido
+                    $("#nombre_empleado").val(data.nombre_empleado['nombre_empleado']);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al obtener el nombre del empleado:", error);
+                }
+            });
+            console.log(data.nombre_empleado)
+        });
+    });
+  </script>
+{% endblock %}
