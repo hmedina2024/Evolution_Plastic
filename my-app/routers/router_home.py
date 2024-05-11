@@ -44,7 +44,6 @@ def lista_empleados():
         return redirect(url_for('inicio'))
 
 
-@app.route("/detalles-empleado/", methods=['GET'])
 @app.route("/detalles-empleado/<int:idEmpleado>", methods=['GET'])
 def detalleEmpleado(idEmpleado=None):
     if 'conectado' in session:
@@ -413,6 +412,7 @@ def viewEditaractividad(id):
 @app.route('/actualizar-actividad', methods=['POST'])
 def actualizarActividad():
     resultData = procesar_actualizar_actividad(request)
+    print(resultData) 
     if resultData:
         return redirect(url_for('lista_actividades'))
     else:
@@ -474,3 +474,45 @@ def formOperacion():
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
+    
+    
+@app.route("/detalles-operacion/<string:id_operacion>", methods=['GET'])
+def detalleOperacion(id_operacion=None):
+    if 'conectado' in session:
+        # Verificamos si el parámetro id_operacion es None o no está presente en la URL
+        if id_operacion is None:
+            return redirect(url_for('inicio'))
+        else:
+            detalle_operacion = sql_detalles_operacionesBD(id_operacion) or []
+            return render_template('public/control/detalles_operacion.html', detalle_operacion=detalle_operacion)
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+@app.route("/editar-operacion/<int:id>", methods=['GET'])
+def viewEditarOperacion(id):
+    if 'conectado' in session:
+        respuestaOperacion = buscarOperacionUnico(id)
+        print(respuestaOperacion)        
+        if respuestaOperacion:
+            return render_template('public/control/form_operacion_update.html', respuestaOperacion=respuestaOperacion)
+        else:
+            flash('La Operacion no existe.', 'error')
+            return redirect(url_for('inicio'))
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+# Recibir formulario para actulizar informacion de cliente
+@app.route('/actualizar-operacion', methods=['POST'])
+def actualizarOperacion():
+    resultData = procesar_actualizacion_operacion(request)
+    if resultData:
+        return redirect(url_for('lista_operaciones'))
+    
+@app.route('/borrar-operacion/<int:id_operacion>', methods=['GET'])
+def borrarOPeracio(id_operacion):
+    resp = eliminarOperacion(id_operacion)
+    if resp:
+        flash('La operacion fue eliminada correctamente', 'success')
+        return redirect(url_for('lista_operaciones'))

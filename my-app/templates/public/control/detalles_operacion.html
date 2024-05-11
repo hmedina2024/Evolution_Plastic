@@ -1,6 +1,6 @@
 {% extends 'public/base_cpanel.html' %}
 <!--Cambiando el title-->
-{% block title %}Crud con Python 🐍 | Registrar Cliente{% endblock %}
+{% block title %}Crud con Python 🐍 | Registrar Operaciones{% endblock %}
 <!---->
 {% block customCSS %}
 <link
@@ -11,12 +11,12 @@
 <!--Inicio del block-->
 {% block body %}
 <!---->
-{% if (detalle_cliente|length) %}
+{% if (detalle_operacion|length) %}
 <div class="card" style="border-radius: 0px !important">
   <div class="row justify-content-center mb-2">
     <div class="col-md-12">
       <h3 class="text-center mt-5 mb-3">
-        <a href="/lista-de-clientes">
+        <a href="/lista-de-operaciones">
           <i class="bi bi-arrow-left-circle"></i>
         </a>
         INFORMACIÓN DEL CLIENTE
@@ -28,54 +28,74 @@
     <div class="col-md-10">
       <div class="card-body">
         <div class="row">
-          <div class="col-md-6">
-            <label for="tipo_documento" class="form-label">
-              Tipo Documento
+          <div class="col-md-3">
+            <label for="id_empleado" class="form-label fw-bold text-primary">
+              Codigo Empleado
             </label>
             <br />
-            {{ detalle_cliente.tipo_documento}}
+            {{ detalle_operacion.id_empleado}}
           </div>
-          <div class="col-md-6">
-            <label for="documento" class="form-label">
-              No. Documento
+          <div class="col-md-4">
+            <label for="nombre_empleado" class="form-label fw-bold text-primary">
+              Nombre Empleado
             </label>
-            <br />{{detalle_cliente.documento}}
+            <br />{{detalle_operacion.nombre_empleado}}
           </div>          
         </div>
-        <div class="row mt-2">
-          <div class="col-md-6">
-            <label for="nombre_cliente" class="form-label">
-              Nombre del Cliente
+        <div class="row mt-3">
+          <div class="col-md-3">
+            <label for="proceso" class="form-label fw-bold text-primary">
+              Proceso
             </label>
             <br />
-            {{ detalle_cliente.nombre_cliente}}
+            {{ detalle_operacion.proceso}}
           </div>        
-          <div class="col-md-6">
-            <label for="telefono_cliente" class="form-label">
-              Telefono del cliente
+          <div class="col-md-3">
+            <label for="actividad" class="form-label fw-bold text-primary">
+              Actividad
             </label>
             <br />
-            {{ detalle_cliente.telefono_cliente}}
+            {{ detalle_operacion.actividad}}
+          </div>
+          <div class="col-md-2">
+            <label for="cantidad" class="form-label fw-bold text-primary">
+              cantidad
+            </label>
+            <br />
+            {{ detalle_operacion.cantidad}}
           </div>
         </div>
-        <div class="row mt-2">
-          <div class="col-md-6">
-            <label for="email_cliente" class="form-label">
-              Email del Cliente
+        <div class="row mt-4">            
+          <div class="col-md-3">
+            <label for="Fecha_hora_inicio" class="form-label fw-bold text-primary">
+              Fecha y hora de Inicio
             </label>
             <br />
-            {{ detalle_cliente.email_cliente}}
-          </div>
-          <div class="col-md-6">
-            <label for="" class="form-label"> IMAGEN DEL CLIENTE </label>
+            {{ detalle_operacion.fecha_hora_inicio}}
+          </div>  
+          <div class="col-md-3">
+            <label for="fecha_hora_fin" class="form-label fw-bold text-primary">
+              Fecha y hora fin
+            </label>
             <br />
-            <img
-              style="width: 200px"
-              src="/static/fotos_clientes/{{ detalle_cliente.foto_cliente }}"
-              alt="imagen-cliente" />
-          </div>
-          <div class="row mt-2">          
-            
+            {{ detalle_operacion.fecha_hora_fin}}
+          </div> 
+          <div class="col-md-3">
+            <label for="fecha_registro" class="form-label fw-bold text-primary">
+              Fecha y hora de registro
+            </label>
+            <br />
+            {{ detalle_operacion.fecha_registro}}
+          </div> 
+                
+          <div class="row mt-2">
+            <div class="col-md-12">
+              <label for="novedad" class="form-label fw-bold text-primary">
+                Novedad
+              </label>
+              <br />
+              {{ detalle_operacion.novedad}}
+            </div>
           </div>
         </div>        
       </div>
@@ -84,7 +104,7 @@
 </div>
 {% else %}
 <h2 class="text-center">
-  No existe el Cliente 😭
+  No existe la Operacion 😭
   <hr />
 </h2>
 {% endif %} {% endblock %}

@@ -47,3 +47,12 @@ function eliminarActividad(id_actividad) {
     }
   }
 }
+
+function eliminarOperacion(id_operacion) {
+  if (confirm("¿Estas seguro que deseas Eliminar la operacion?")) {
+    let url = `/borrar-operacion/${id_operacion}`;
+    if (url) {
+      window.location.href = url;
+    }
+  }
+}

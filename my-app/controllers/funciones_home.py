@@ -1046,16 +1046,16 @@ def sql_lista_operacionesBD():
             with conexion_MySQLdb.cursor(dictionary=True) as cursor:
                 querySQL = """
                     SELECT 
-                    o.id_operacion,
-                    o.id_empleado,
-                    o.nombre_empleado,
-                    o.proceso,
-                    o.actividad,
-                    o.cantidad,
-                    o.novedad,
-                    o.fecha_hora_inicio,
-                    o.fecha_hora_fin,
-                    o.fecha_registro
+                        o.id_operacion,
+                        o.id_empleado,
+                        o.nombre_empleado,
+                        o.proceso,
+                        o.actividad,
+                        o.cantidad,
+                        o.novedad,
+                        o.fecha_hora_inicio,
+                        o.fecha_hora_fin,
+                        o.fecha_registro
                     FROM tbl_operaciones as o
                     ORDER BY fecha_registro DESC
                     """
@@ -1065,3 +1065,99 @@ def sql_lista_operacionesBD():
     except Exception as e:
         print(f"Error en la función sql_lista_operacionesBD: {e}")
         return None
+
+def sql_detalles_operacionesBD(id_operacion):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""
+                    SELECT 
+                        o.id_operacion,
+                        o.id_empleado,
+                        o.nombre_empleado,
+                        o.proceso,
+                        o.actividad,
+                        o.cantidad,
+                        o.novedad,
+                        o.fecha_hora_inicio,
+                        o.fecha_hora_fin,
+                        DATE_FORMAT(o.fecha_registro, '%Y-%m-%d %h:%i %p') AS fecha_registro
+                    FROM tbl_operaciones AS o
+                    WHERE id_operacion =%s
+                    """)
+                cursor.execute(querySQL, (id_operacion,))
+                operacionBD = cursor.fetchone()
+        return operacionBD
+    except Exception as e:
+        print(
+            f"Errro en la función sql_detalles_operacionesBD: {e}")
+        return None
+    
+def buscarOperacionUnico(id):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+                querySQL = ("""
+                        SELECT 
+                            o.id_operacion,
+                            o.id_empleado,
+                            o.nombre_empleado,
+                            o.proceso,
+                            o.actividad,
+                            o.cantidad,
+                            o.novedad,
+                            o.fecha_hora_inicio,
+                            o.fecha_hora_fin,
+                            o.fecha_registro
+                        FROM tbl_operaciones AS o
+                        WHERE o.id_operacion =%s LIMIT 1
+                    """)
+                mycursor.execute(querySQL, (id,))
+                operacion = mycursor.fetchone()
+                return operacion
+
+    except Exception as e:
+        print(f"Ocurrió un error en def buscarOperacionUnico: {e}")
+        return []
+    
+def procesar_actualizacion_operacion(data):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                id_operacion = data.form['id_operacion']
+                proceso = data.form['proceso']
+                actividad = data.form['actividad']
+                cantidad = data.form['cantidad']
+                novedad = data.form['novedad']             
+                querySQL = """
+                    UPDATE tbl_operaciones
+                    SET 
+                        proceso = %s,
+                        actividad = %s,
+                        cantidad = %s,
+                        novedad = %s
+                    WHERE id_operacion = %s
+                """
+                values = (proceso, actividad, cantidad,novedad,id_operacion)
+
+                cursor.execute(querySQL, values)
+                conexion_MySQLdb.commit()
+
+        return cursor.rowcount or []
+    except Exception as e:
+        print(f"Ocurrió un error en procesar_actualizar_actividad: {e}")
+        return None
+    
+# Eliminar OPeracion
+def eliminarOperacion(id_operacion):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "DELETE FROM tbl_operaciones WHERE id_operacion=%s"
+                cursor.execute(querySQL, (id_operacion,))
+                conexion_MySQLdb.commit()
+                resultado_eliminar = cursor.rowcount
+        return resultado_eliminar
+    except Exception as e:
+        print(f"Error en eliminar operacion : {e}")
+        return []

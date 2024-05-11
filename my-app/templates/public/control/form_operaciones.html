@@ -9,13 +9,30 @@
   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css" />
+<style>
+  /* Estilo para simular el botón */
+  .custom-select-wrapper {
+      position: relative;
+      display: inline-block;
+  }
+  .custom-select-wrapper .btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      padding: .375rem .75rem;
+      background-color: #fff;
+      border-left: 1px solid #ced4da;
+      border-radius: 0 .25rem .25rem 0;
+  }
+</style>
 {% endblock %}
 <!--Inicio del block-->
 {% block body %}
 <div class="card" style="border-radius: 0px !important">
   <div class="row justify-content-center mb-2">
     <div class="col-md-12">
-      <h3 class="text-center mt-5 mb-3">NUEVO REGISTRO</h3>
+      <h3 class="text-center mt-5 mb-3 fw-bold">NUEVO REGISTRO</h3>
       <hr />
     </div>
   </div>
@@ -29,7 +46,7 @@
         enctype="multipart/form-data">
           <div class="row">
             <div class="col-md-4">
-              <label for="id_empleado" class="form-label">
+              <label for="id_empleado" class="form-label fw-bold text-primary">
                 Codigo empleado
               </label>
               <select name="id_empleado" id="id_empleado" class="form-control"
@@ -41,7 +58,7 @@
               </select>
             </div>
             <div class="col-md-8">
-              <label for="nombre_empleado" class="form-label">
+              <label for="nombre_empleado" class="form-label fw-bold text-primary">
                 Nombre Empleado
               </label>
               <input class="form-control" type="text" name="nombre_empleado"
@@ -51,7 +68,7 @@
             </div>
             <div class="row mt-4">
               <div class="col-md-3">
-                <label for="nombre_proceso" class="form-label" required>
+                <label for="nombre_proceso" class="form-label fw-bold text-primary" required>
                   PROCESO
                 </label>
                 <select name="nombre_proceso" id="nombre_proceso" class="form-control"
@@ -62,7 +79,7 @@
                 </select>
               </div>
               <div class="col-md-3">
-                <label for="nombre_actividad" class="form-label">
+                <label for="nombre_actividad" class="form-label fw-bold text-primary">
                   Actividad
                 </label>
                 <select name="nombre_actividad" id="nombre_actividad" class="form-control"
@@ -86,13 +103,13 @@
                 </select>
               </div> -->
               <div class="col-md-3">
-                <label for="documento" class="form-label">
+                <label for="documento" class="form-label fw-bold text-primary">
                   Cantidad Realizada
                 </label>
                 <input
                   class="form-control"
                   type="INT"
-                  name="cantidad"
+                  name="documento"
                   id="documento"
                   required />
               </div>
@@ -102,7 +119,7 @@
           <br />
           <div class="row mt-2">            
             <div class="col-md-4">
-              <label for="hora_inicio" class="form-label">
+              <label for="hora_inicio" class="form-label fw-bold text-primary" >
                 Fecha y Hora Inicio
               </label>
               <input
@@ -112,7 +129,7 @@
                 required />
             </div>
             <div class="col-md-4">
-              <label for="hora_fin" class="form-label">
+              <label for="hora_fin" class="form-label fw-bold text-primary">
                 Fecha y Hora Fin
               </label>
               <input
@@ -123,7 +140,7 @@
             </div>            
             <div class="col-md-12">
               <br />
-              <label for="novedades" class="form-label">
+              <label for="novedades" class="form-label fw-bold text-primary">
                 NOVEDADES
               </label>
               <textarea
