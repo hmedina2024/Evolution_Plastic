@@ -18,19 +18,20 @@ $("#imageUpload").change(function () {
 /**
  * Formatear Documento
  */
-let documento = document.querySelector("#documento");
-if (documento) {
-  documento.addEventListener("input", (inputClick) => {
-    let cantidad = inputClick.target.value.replace(/\D/g, ""); // Eliminar caracteres no numéricos
-    cantidad = parseInt(cantidad, 10); // Convertir a número entero
-    if (isNaN(cantidad)) {
-      cantidad = 0; // Si no se puede convertir a número, se establece en 0
-    }
-    // Formatear la cantidad y asignarla al campo de entrada
-    inputClick.target.value =
-      cantidad.toLocaleString("es-CO", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      });
+let camposNumericos = document.querySelectorAll("#documento, #cantidad");
+
+if (camposNumericos) {
+  camposNumericos.forEach(campo => {
+    campo.addEventListener("input", (inputEvent) => {
+      let valor = inputEvent.target.value.replace(/\D/g, ""); // Eliminar caracteres no numéricos
+      valor = parseInt(valor, 10); // Convertir a número entero
+      if (isNaN(valor)) {
+        valor = 0; // Si no se puede convertir a número, se establece en 0
+      }
+      // Asignar el valor sin formato al campo de entrada
+      inputEvent.target.value = valor.toString();
+    });
   });
 }
+
+

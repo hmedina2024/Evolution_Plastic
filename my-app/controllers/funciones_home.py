@@ -1000,24 +1000,6 @@ def obtener_proceso():
         print(f"Error en la función obtener_nombre_proceso: {e}")
         return None
     
-def procesar_form_operacion(dataForm):
-    try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-
-                sql = "INSERT INTO `tbl_operaciones` (`id_empleado`, `nombre_empleado`, `proceso`, `actividad`, `cantidad`, `novedad`, `fecha_hora_inicio`, `fecha_hora_fin`) VALUES  (%s, %s, %s,%s, %s, %s,%s, %s)"
-
-                # Creando una tupla con los valores del INSERT
-                valores = (dataForm['id_empleado'], dataForm['nombre_empleado'], dataForm['nombre_proceso'], dataForm['nombre_actividad'], dataForm['cantidad'], dataForm['novedades'], dataForm['hora_inicio'], dataForm['hora_fin'])
-                cursor.execute(sql, valores)
-
-                conexion_MySQLdb.commit()
-                resultado_insert = cursor.rowcount
-                return resultado_insert
-
-    except Exception as e:
-        return f'Se produjo un error en procesar_form_operacion: {str(e)}'
-
     
 def obtener_actividad():
     try:
@@ -1038,6 +1020,25 @@ def obtener_actividad():
     except Exception as e:
         print(f"Error en la función obtener_nombre_actividad: {e}")
         return None
+
+
+def procesar_form_operacion(dataForm):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+
+                sql = "INSERT INTO `tbl_operaciones` (`id_empleado`, `nombre_empleado`, `proceso`, `actividad`, `codigo_op`, `cantidad`, `novedad`, `fecha_hora_inicio`, `fecha_hora_fin`) VALUES  (%s, %s, %s,%s, %s, %s,%s, %s, %s)"
+
+                # Creando una tupla con los valores del INSERT
+                valores = (dataForm['id_empleado'], dataForm['nombre_empleado'], dataForm['nombre_proceso'], dataForm['nombre_actividad'], dataForm['cod_op'], dataForm['cantidad'], dataForm['novedades'], dataForm['hora_inicio'], dataForm['hora_fin'])
+                cursor.execute(sql, valores)
+
+                conexion_MySQLdb.commit()
+                resultado_insert = cursor.rowcount
+                return resultado_insert
+
+    except Exception as e:
+        return f'Se produjo un error en procesar_form_operacion: {str(e)}'
     
     
 def sql_lista_operacionesBD():
@@ -1077,6 +1078,7 @@ def sql_detalles_operacionesBD(id_operacion):
                         o.nombre_empleado,
                         o.proceso,
                         o.actividad,
+                        o.codigo_op,
                         o.cantidad,
                         o.novedad,
                         o.fecha_hora_inicio,
@@ -1161,3 +1163,194 @@ def eliminarOperacion(id_operacion):
     except Exception as e:
         print(f"Error en eliminar operacion : {e}")
         return []
+    
+    
+
+
+### ORDEN DE PRODUCCION
+def procesar_form_op(dataForm):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+
+                sql = "INSERT INTO tbl_ordenProduccion (codigo_op, nombre_cliente, producto , estado, cantidad, odi , empleado) VALUES (%s, %s, %s, %s, %s, %s , %s)"
+
+                # Creando una tupla con los valores del INSERT
+                valores = (dataForm['cod_op'], dataForm['nombre_cliente'], dataForm['producto'], dataForm['estado'], dataForm['cantidad'], dataForm['odi'], dataForm['vendedor'])
+                print(valores)
+                cursor.execute(sql, valores)
+
+                conexion_MySQLdb.commit()
+                resultado_insert = cursor.rowcount
+                return resultado_insert
+
+    except Exception as e:
+        return f'Se produjo un error en procesar_form_op: {str(e)}'
+
+
+# Lista de Orden de Producción
+def sql_lista_opBD():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = """
+                    SELECT 
+                        p.id_op,
+                        p.codigo_op,
+                        p.nombre_cliente,
+                        p.producto,
+                        p.estado,
+                        p.cantidad, 
+                        p.odi,
+                        p.empleado,                     
+                        p.fecha_registro
+                    FROM tbl_ordenProduccion AS p
+                    ORDER BY p.id_op DESC
+                    """
+                cursor.execute(querySQL)
+                opBD = cursor.fetchall()
+        return opBD
+    except Exception as e:
+        print(f"Error en la función sql_lista_opBD: {e}")
+        return None
+
+
+# Detalles del Orden de producción
+def sql_detalles_opBD(idOp):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""
+                    SELECT 
+                        p.id_op,
+                        p.codigo_op,
+                        p.nombre_cliente,
+                        p.producto,
+                        p.estado,
+                        p.cantidad, 
+                        p.odi,
+                        p.empleado,  
+                        DATE_FORMAT(P.fecha_registro, '%Y-%m-%d %h:%i %p') AS fecha_registro
+                    FROM tbl_ordenProduccion AS p
+                    WHERE id_op =%s
+                    ORDER BY p.id_op DESC
+                    """)
+                cursor.execute(querySQL, (idOp,))
+                opBD = cursor.fetchone()
+                print(opBD)
+        return opBD
+    except Exception as e:
+        print(
+            f"Errro en la función sql_detalles_opBD: {e}")
+        return None
+
+
+
+def buscarOpUnico(id):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+                querySQL = ("""
+                        SELECT 
+                            p.id_op,
+                            p.codigo_op,
+                            p.nombre_cliente,
+                            p.producto,
+                            p.estado,
+                            p.cantidad, 
+                            p.odi,
+                            p.empleado,                        
+                            p.fecha_registro
+                        FROM tbl_ordenProduccion AS p
+                        WHERE p.id_op =%s LIMIT 1
+                    """)
+                mycursor.execute(querySQL, (id,))
+                op = mycursor.fetchone()
+                return op
+
+    except Exception as e:
+        print(f"Ocurrió un error en def buscarOpUnico: {e}")
+        return []
+
+
+def procesar_actualizar_form_op(data):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                codigo_op = data.form['codigo_op']
+                nombre_cliente = data.form['nombre_cliente']
+                producto = data.form['producto']
+                estado = data.form['estado']
+                cantidad = data.form['cantidad']
+                odi = data.form['odi']
+                empleado = data.form['empleado']
+                id_op = data.form['id_op']             
+                querySQL = """
+                    UPDATE tbl_ordenProduccion
+                    SET 
+                        codigo_op = %s,
+                        nombre_cliente = %s,
+                        producto = %s,
+                        estado = %s,
+                        cantidad = %s,
+                        odi = %s,
+                        empleado = %s
+                    WHERE id_op = %s
+                """
+                values = (codigo_op, nombre_cliente, producto,estado,cantidad,odi,empleado,id_op)
+
+                cursor.execute(querySQL, values)
+                conexion_MySQLdb.commit()
+
+        return cursor.rowcount or []
+    except Exception as e:
+        print(f"Ocurrió un error en procesar_actualizar_form_op: {e}")
+        return None
+
+# Eliminar Orden de Producción
+def eliminarOp(id_op):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "DELETE FROM tbl_ordenProduccion WHERE id_op=%s"
+                cursor.execute(querySQL, (id_op,))
+                conexion_MySQLdb.commit()
+                resultado_eliminar = cursor.rowcount
+        return resultado_eliminar
+    except Exception as e:
+        print(f"Error en eliminarOp : {e}")
+        return []
+    
+def obtener_vendedor():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""SELECT DISTINCT CONCAT(nombre_empleado, ' ', apellido_empleado) as nombre_empleado FROM tbl_empleados order by nombre_empleado ASC""")
+                cursor.execute(querySQL,)
+                empleadoBD = cursor.fetchall()                
+                # Extraer solo los valores de actividad de los diccionarios
+                empleado = [empleado['nombre_empleado'] for empleado in empleadoBD]
+        return empleado
+    except Exception as e:
+        print(f"Error en la función obtener_nombre_empleado: {e}")
+        return None
+    
+def obtener_op():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""
+                    SELECT DISTINCT
+                        o.codigo_op
+                    FROM tbl_ordenproduccion AS o
+                    ORDER BY o.codigo_op ASC
+                    """)
+                cursor.execute(querySQL,)
+                opBD = cursor.fetchall()                
+                # Extraer solo los valores de actividad de los diccionarios
+                op = [op['codigo_op'] for op in opBD]
+                print(op)
+        return op
+    except Exception as e:
+        print(f"Error en la función obtener_nombre_op: {e}")
+        return None

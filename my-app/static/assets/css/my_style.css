@@ -173,7 +173,7 @@ tbody tr:hover {
 .menu-vertical .menu-block,
 .menu-vertical .menu-inner > .menu-item,
 .menu-vertical .menu-inner > .menu-header {
-  width: 17.25rem !important;
+  width: 15.25rem !important;
 }
 
 @media (min-width: 1400px) {

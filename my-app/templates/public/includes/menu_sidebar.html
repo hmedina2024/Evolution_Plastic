@@ -1,11 +1,11 @@
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme"  >
   <div class="app-brand demo">
     <a href="{{ url_for('inicio') }}" class="app-brand-link">
       <span class="app-brand-logo demo">
         <img
           src="{{ url_for('static', filename ='assets/img/logo.png') }}"
           alt="Logo"
-          style="width: 90%; height: auto;" />
+          style="width: 70%; height: auto;" />
       </span>
     </a>
     
@@ -17,7 +17,7 @@
   </div>
 
   <div class="menu-inner-shadow"></div>
-  <ul class="menu-inner py-5">
+  <ul class="menu-inner py-1">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-ui-checks-grid"></i>  Control
@@ -31,6 +31,16 @@
         <li class="menu-item {% if request.path == '/lista-de-operaciones' %} active{% endif %}">
           <a href="/lista-de-operaciones" class="dropdown-item">
             <i class="bi bi-pass-fill"></i> Lista de Registros
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/registrar-op' %} active {% endif %}">
+          <a href="{{ url_for('viewFormOp') }}" class="dropdown-item">
+            <i class="bi bi-file-minus"></i> Registro OP
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/lista-de-op' %} active{% endif %}">
+          <a href="/lista-de-op" class="dropdown-item">
+            <i class="bi bi-file-minus-fill"></i> Lista de OP
           </a>
         </li>
       </ul>

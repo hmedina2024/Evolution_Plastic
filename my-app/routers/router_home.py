@@ -161,7 +161,6 @@ def lista_procesos():
         return redirect(url_for('inicio'))
 
 
-@app.route("/detalles-proceso/", methods=['GET'])
 @app.route("/detalles-proceso/<string:codigo_proceso>", methods=['GET'])
 def detalleProceso(codigo_proceso=None):
     if 'conectado' in session:
@@ -279,11 +278,10 @@ def lista_clientes():
         return redirect(url_for('inicio'))
 
 
-@app.route("/detalles-cliente/", methods=['GET'])
 @app.route("/detalles-cliente/<int:idCliente>", methods=['GET'])
 def detalleCliente(idCliente=None):
     if 'conectado' in session:
-        # Verificamos si el parámetro idEmpleado es None o no está presente en la URL
+        # Verificamos si el parámetro idCliente es None o no está presente en la URL
         if idCliente is None:
             return redirect(url_for('inicio'))
         else:
@@ -379,7 +377,6 @@ def lista_actividades():
         return redirect(url_for('inicio'))
 
 
-@app.route("/detalles-actividad/", methods=['GET'])
 @app.route("/detalles-actividad/<string:codigo_actividad>", methods=['GET'])
 def detalleActividad(codigo_actividad=None):
     if 'conectado' in session:
@@ -438,7 +435,6 @@ def viewFormOperacion():
     if request.method == 'POST':
         id_empleado = request.form.get('id_empleado')
         nombre_empleado = obtener_nombre_empleado(id_empleado)
-        nombre = nombre_empleado['nombre_empleado']
         return jsonify(nombre_empleado=nombre_empleado)
     else:
         id_empleados = obtener_id_empleados()
@@ -446,9 +442,10 @@ def viewFormOperacion():
         if 'conectado' in session:
             nombre_proceso = obtener_proceso()
             print(nombre_proceso)
-            nombre_actividad = obtener_actividad()  # Llamar a la nueva función
-            print(nombre_actividad)  # Verificar que obtienes los datos correctos
-            return render_template('public/control/form_operaciones.html', nombre_proceso=nombre_proceso, id_empleados=id_empleados, nombre_actividad=nombre_actividad)
+            nombre_actividad = obtener_actividad()
+            codigo_op = obtener_op()# Llamar a la nueva función
+            print(codigo_op)  # Verificar que obtienes los datos correctos
+            return render_template('public/control/form_operaciones.html', nombre_proceso=nombre_proceso, id_empleados=id_empleados, nombre_actividad=nombre_actividad,codigo_op=codigo_op)
         else:
             flash('Primero debes iniciar sesión.', 'error')
             return redirect(url_for('inicio'))
@@ -466,6 +463,7 @@ def lista_operaciones():
 def formOperacion():
     if 'conectado' in session:
         resultado = procesar_form_operacion(request.form)
+        print(resultado)
         if resultado:
             return redirect(url_for('lista_operaciones'))
         else:
@@ -516,3 +514,89 @@ def borrarOPeracio(id_operacion):
     if resp:
         flash('La operacion fue eliminada correctamente', 'success')
         return redirect(url_for('lista_operaciones'))
+    
+
+
+
+    
+#### ORDER DE PRODUCCIóN
+@app.route('/registrar-op', methods=['GET'])
+def viewFormOp():
+    if 'conectado' in session:
+        clientes = sql_lista_clientesBD()
+        empleados = obtener_vendedor()
+        print(empleados)
+        return render_template('public/ordenproduccion/form_op.html', clientes=clientes, empleados=empleados )  # Pasar datos de empleados al render_template
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+
+@app.route('/form-registrar-op', methods=['POST'])
+def formOp():
+    if 'conectado' in session:
+        resultado = procesar_form_op(request.form)
+        print(resultado)
+        if resultado:
+            return redirect(url_for('lista_op'))
+        else:
+            flash('La op NO fue registrada.', 'error')
+            return render_template('public/ordenproduccion/form_op.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route('/lista-de-op', methods=['GET'])
+def lista_op():
+    if 'conectado' in session:
+        return render_template('public/ordenproduccion/lista_op.html', op=sql_lista_opBD())
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+@app.route("/detalles-op/<string:idOp>", methods=['GET'])
+def detalleOp(idOp=None):
+    if 'conectado' in session:
+        # Verificamos si el parámetro codigo_op es None o no está presente en la URL
+        if idOp is None:
+            return redirect(url_for('inicio'))
+        else:
+            detalle_op = sql_detalles_opBD(idOp) or []
+            return render_template('public/ordenproduccion/detalles_op.html', detalle_op=detalle_op)
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+
+@app.route("/editar-op/<int:id>", methods=['GET'])
+def viewEditarop(id):
+    if 'conectado' in session:
+        respuestaOp = buscarOpUnico(id)
+        if respuestaOp:
+            return render_template('public/ordenproduccion/form_op_update.html', respuestaOp=respuestaOp)
+        else:
+            flash('La Orden de Producción no existe.', 'error')
+            return redirect(url_for('inicio'))
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+
+
+# Recibir formulario para actulizar informacion de la orden de producción
+@app.route('/actualizar-op', methods=['POST'])
+def actualizarOp():
+    resultData = procesar_actualizar_form_op(request)
+    print(resultData)
+    if resultData:
+        return redirect(url_for('lista_op'))
+
+
+@app.route('/borrar-op/<int:id_op>', methods=['GET'])
+def borrarOp(id_op):
+    resp = eliminarOp(id_op)
+    if resp:
+        flash('La Orden de Producción fue eliminada correctamente', 'success')
+        return redirect(url_for('lista_op'))

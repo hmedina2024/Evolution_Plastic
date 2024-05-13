@@ -56,3 +56,12 @@ function eliminarOperacion(id_operacion) {
     }
   }
 }
+
+function eliminarOp(id_op) {
+  if (confirm("¿Estas seguro que deseas Eliminar la oop?")) {
+    let url = `/borrar-op/${id_op}`;
+    if (url) {
+      window.location.href = url;
+    }
+  }
+}

@@ -1,12 +1,13 @@
-{% for cliente in dataBusqueda %}
-<tr id="cliente_{{ cliente.id_cliente }}">
+{% for proceso in dataBusqueda2 %}
+<tr id="proceso_{{ proceso.id_proceso }}">
   <td>{{ loop.index }}</td>
-  <td>{{ cliente.nombre_cliente }}</td>
-  <td>{{ cliente.tipo_documento }}</td>
-  <td>$ {{ '{:,.0f}'.format(cliente.documento).replace(',', '.')}}</td>
+  <td>{{ proceso.codigo_proceso }}</td>
+  <td>{{ proceso.nombre_proceso }}</td>
+  <td>{{ proceso.descripcion_proceso }}</td>
+  <td>{{ proceso.fecha_registro }}</td>
   <td>
     <a
-      href="/detalles-cliente/{{ cliente.id_cliente }}"
+      href="/detalles-proceso/{{ proceso.id_proceso }}"
       title="Ver envio"
       type="button"
       class="btn btn-info btn-sm"
@@ -19,7 +20,7 @@
       Ver detalles
     </a>
     <a
-      href="{{ url_for('viewEditarCliente', id = cliente.id_cliente) }}"
+      href="{{ url_for('viewEditarProceso', id = proceso.id_proceso) }}"
       class="btn btn-success btn-sm"
       tooltip="Actualizar Registro">
       <i class="bi bi-arrow-clockwise"></i>
@@ -27,13 +28,13 @@
     </a>
     <a
       href="#"
-      onclick="eliminarCliente('{{ cliente.id_cliente }}');"
+      onclick="eliminarproceso('{{ proceso.id_proceso }}');"
       class="btn btn-danger btn-sm"
       data-bs-toggle="tooltip"
       data-bs-offset="0,4"
       data-bs-placement="top"
       data-bs-html="true"
-      title="<span>Eliminar cliente {{ cliente.nombre_cliente }}</span>">
+      title="<span>Eliminar proceso {{ proceso.nombre_proceso }}</span>">
       <i class="bi bi-trash3"></i>
       Eliminar
     </a>
