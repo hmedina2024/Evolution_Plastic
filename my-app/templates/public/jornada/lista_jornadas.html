@@ -1,13 +1,13 @@
 {% extends 'public/base_cpanel.html' %}
 <!--Cambiando el title-->
-{% block title %}Crud con Python 🐍 | Lista de Operaciones{% endblock %}
+{% block title %}Crud con Python 🐍 | Lista de Jornadas{% endblock %}
 <!--Inicio del block-->
 {% block body %}
 
 <div class="card" style="border-radius: 0px !important">
   <div class="row justify-content-center mb-2">
     <div class="col-md-12 mb-4">
-      <h3 class="text-center mt-5 mb-3">LISTA DE OPERACIONES</h3>
+      <h3 class="text-center mt-5 mb-3">LISTA DE JORNADAS</h3>
       <hr />
     </div>
 
@@ -26,29 +26,24 @@
             <tr>
               <th>#</th>
               <th>Empleado</th>
-              <th>Proceso</th>
-              <th>Actividad</th>
-              <!-- <th>Fecha/Hora Inicio</th>  
-              <th>Fecha/Hora Fin</th>               -->
-              <th>Cantidad</th>
+              <th>FH. Llegada Real</th>
+              <th>FH. Salida Real</th>
+              <th>Novedad en Jornada Real</th>
               <th>Acción</th>
               <!-- <th>Novedad</th> -->
             </tr>
           </thead>
           <tbody>
-            {% for operacion in operaciones %}
-            <tr id="operacion_{{ operacion.id_operacion }}">
+            {% for jornada in jornadas %}
+            <tr id="jornada_{{ jornada.id_jornada }}">
               <td>{{ loop.index }}</td>
-              <td>{{ operacion.nombre_empleado }}</td>
-              <td>{{ operacion.proceso }}</td>
-              <td>{{ operacion.actividad }}</td>
-              <!-- <td>{{ operacion.fecha_hora_inicio }}</td>
-              <td>{{ operacion.fecha_hora_fin }}</td> -->
-              <td>{{ operacion.cantidad }}</td>
-              <!-- <td>{{ operacion.novedad }}</td> -->
+              <td>{{ jornada.nombre_empleado }}</td>
+              <td>{{ jornada.fecha_hora_llegada }}</td>
+              <td>{{ jornada.fecha_hora_salida }}</td>
+              <td>{{ jornada.novedad_jornada }}</td>
               <td width="10px">
                 <a
-                  href="/detalles-operacion/{{ operacion.id_operacion }}"
+                  href="/detalles-jornada/{{ jornada.id_jornada }}"
                   title="Ver envio"
                   type="button"
                   class="btn btn-info btn-sm"
@@ -61,7 +56,7 @@
                   Ver detalles
                 </a>  
                 <!-- <a
-                href="{{ url_for('viewEditarOperacion', id=operacion.id_operacion) }}"
+                href="{{ url_for('viewEditarJornada', id=jornada.id_jornada) }}"
                 class="btn btn-success btn-sm"
                 title="Actualizar Registro"
                 data-bs-toggle="tooltip"
@@ -72,13 +67,13 @@
                 </a> -->
                 <a
                   href="#"
-                  onclick="eliminarOperacion('{{ operacion.id_operacion }}');"
+                  onclick="eliminarJornada('{{ jornada.id_jornada }}');"
                   class="btn btn-danger btn-sm"
                   data-bs-toggle="tooltip"
                   data-bs-offset="0,4"
                   data-bs-placement="top"
                   data-bs-html="true"
-                  title="<span>Eliminar Operacion {{ operacion.id_operacion }}</span>">
+                  title="<span>Eliminar Jornada {{ jornada.id_jornada }}</span>">
                   <i class="bi bi-trash3"></i>
                   Eliminar
                 </a> 

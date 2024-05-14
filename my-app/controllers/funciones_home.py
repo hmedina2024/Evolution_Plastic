@@ -1354,3 +1354,157 @@ def obtener_op():
     except Exception as e:
         print(f"Error en la función obtener_nombre_op: {e}")
         return None
+    
+    
+    
+
+
+### JORNADA DIARIA    
+def procesar_form_jornada(dataForm):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+
+                sql = "INSERT INTO `tbl_jornadas` (`id_empleado`, `nombre_empleado`, `novedad_jornada_programada`, `novedad_jornada`, `fecha_hora_llegada_programada`, `fecha_hora_salida_programada`, `fecha_hora_llegada`, `fecha_hora_salida`) VALUES  (%s, %s, %s,%s, %s, %s,%s, %s)"
+
+                # Creando una tupla con los valores del INSERT
+                valores = (dataForm['id_empleado'], dataForm['nombre_empleado'], dataForm['novedad_jornada_programada'], dataForm['novedad_jornada'], dataForm['fecha_hora_llegada_programada'], dataForm['fecha_hora_salida_programada'], dataForm['fecha_hora_llegada'], dataForm['fecha_hora_salida'])
+                cursor.execute(sql, valores)
+
+                conexion_MySQLdb.commit()
+                resultado_insert = cursor.rowcount
+                return resultado_insert
+
+    except Exception as e:
+        return f'Se produjo un error en procesar_form_jornada: {str(e)}'
+    
+    
+def sql_lista_jornadasBD():
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = """
+                    SELECT 
+                        o.id_jornada,
+                        o.id_empleado,
+                        o.nombre_empleado,
+                        o.novedad_jornada_programada,
+                        o.novedad_jornada,
+                        o.fecha_hora_llegada_programada,
+                        o.fecha_hora_salida_programada,
+                        o.fecha_hora_llegada,
+                        o.fecha_hora_salida,
+                        o.fecha_registro
+                    FROM tbl_jornadas as o
+                    ORDER BY fecha_registro DESC
+                    """
+                cursor.execute(querySQL)
+                jornadasBD = cursor.fetchall()
+        return jornadasBD
+    except Exception as e:
+        print(f"Error en la función sql_lista_jornadasBD: {e}")
+        return None
+
+def sql_detalles_jornadasBD(id_jornada):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = ("""
+                    SELECT 
+                        o.id_jornada,
+                        o.id_empleado,
+                        o.nombre_empleado,
+                        o.novedad_jornada_programada,
+                        o.novedad_jornada,
+                        o.fecha_hora_llegada_programada,
+                        o.fecha_hora_salida_programada,
+                        o.fecha_hora_llegada,
+                        o.fecha_hora_salida,
+                        DATE_FORMAT(o.fecha_registro, '%Y-%m-%d %h:%i %p') AS fecha_registro
+                    FROM tbl_jornadas AS o
+                    WHERE id_jornada =%s
+                    """)
+                cursor.execute(querySQL, (id_jornada,))
+                jornadaBD = cursor.fetchone()
+        return jornadaBD
+    except Exception as e:
+        print(
+            f"Errro en la función sql_detalles_jornadasBD: {e}")
+        return None
+    
+def buscarJornadaUnico(id):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+                querySQL = ("""
+                        SELECT 
+                            o.id_jornada,
+                            o.id_empleado,
+                            o.nombre_empleado,
+                            o.novedad_jornada_programada,
+                            o.novedad_jornada,
+                            o.fecha_hora_llegada_programada,
+                            o.fecha_hora_salida_programada,
+                            o.fecha_hora_llegada,
+                            o.fecha_hora_salida,
+                            o.fecha_registro
+                        FROM tbl_jornadas AS o
+                        WHERE o.id_jornada =%s LIMIT 1
+                    """)
+                mycursor.execute(querySQL, (id,))
+                jornada = mycursor.fetchone()
+                return jornada
+
+    except Exception as e:
+        print(f"Ocurrió un error en def buscarjornadaUnico: {e}")
+        return []
+    
+def procesar_actualizacion_jornada(data):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                id_jornada = data.form['id_jornada']
+                id_empleado = data.form['id_empleado']
+                nombre_empleado = data.form['nombre_empleado']
+                novedad_jornada_programada = data.form['novedad_jornada_programada']
+                novedad_jornada = data.form['novedad_jornada']
+                fecha_hora_llegada_programada = data.form['fecha_hora_llegada_programada']
+                fecha_hora_salida_programada = data.form['fecha_hora_salida_programada']  
+                fecha_hora_llegada = data.form['fecha_hora_llegada']
+                fecha_hora_salida = data.form['fecha_hora_salida']             
+                querySQL = """
+                    UPDATE tbl_jornadas
+                    SET 
+                        id_empleado = %s,
+                        nombre_empleado = %s,
+                        novedad_jornada_programada = %s,
+                        novedad_jornada = %s,
+                        fecha_hora_llegada_programada = %s,
+                        fecha_hora_salida_programada = %s,
+                        fecha_hora_llegada = %s,
+                        fecha_hora_salida = %s
+                    WHERE id_jornada = %s
+                """
+                values = (id_empleado, nombre_empleado, novedad_jornada_programada,novedad_jornada,fecha_hora_llegada_programada,fecha_hora_salida_programada,fecha_hora_llegada,fecha_hora_salida,id_jornada)
+
+                cursor.execute(querySQL, values)
+                conexion_MySQLdb.commit()
+
+        return cursor.rowcount or []
+    except Exception as e:
+        print(f"Ocurrió un error en procesar_actualizar_jornada: {e}")
+        return None
+    
+# Eliminar OPeracion
+def eliminarJornada(id_jornada):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
+                querySQL = "DELETE FROM tbl_jornadas WHERE id_jornada=%s"
+                cursor.execute(querySQL, (id_jornada,))
+                conexion_MySQLdb.commit()
+                resultado_eliminar = cursor.rowcount
+        return resultado_eliminar
+    except Exception as e:
+        print(f"Error en eliminar jornada : {e}")
+        return []

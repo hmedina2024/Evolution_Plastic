@@ -20,17 +20,17 @@
   <ul class="menu-inner py-1">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-ui-checks-grid"></i>  Control
+        <i class="menu-icon bi-ui-checks-grid"></i>  Control
       </a>
       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
         <li class="menu-item {% if request.path == '/registrar-operacion' %} active {% endif %}">
           <a href="{{ url_for('viewFormOperacion') }}" class="dropdown-item">
-            <i class="bi bi-pass"></i> Registro Diario
+            <i class="bi bi-pass"></i> Operación Diaria
           </a>
         </li>
         <li class="menu-item {% if request.path == '/lista-de-operaciones' %} active{% endif %}">
           <a href="/lista-de-operaciones" class="dropdown-item">
-            <i class="bi bi-pass-fill"></i> Lista de Registros
+            <i class="bi bi-pass-fill"></i> Lista de Operaciones Diarias
           </a>
         </li>
         <li class="menu-item {% if request.path == '/registrar-op' %} active {% endif %}">
@@ -43,11 +43,21 @@
             <i class="bi bi-file-minus-fill"></i> Lista de OP
           </a>
         </li>
+        <li class="menu-item {% if request.path == '/registrar-jornada' %} active {% endif %}">
+          <a href="{{ url_for('viewFormJornada') }}" class="dropdown-item">
+            <i class="bi bi-file-minus"></i> Registro Jornada
+          </a>
+        </li>
+        <li class="menu-item {% if request.path == '/lista-de-jornadas' %} active{% endif %}">
+          <a href="/lista-de-jornadas" class="dropdown-item">
+            <i class="bi bi-file-minus-fill"></i> Lista de Jornadas
+          </a>
+        </li>
       </ul>
     </li>
     <li class="nav-item dropdown {% if request.path in ['/registrar-empleado', '/lista-de-empleados', '/registrar-proceso', '/lista-de-procesos', '/registrar-cliente', '/lista-de-clientes'] %} active{% endif %}">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-person-gear"></i>  Administrar
+        <i class="menu-icon bi-person-gear"></i>  Administrar
       </a>
       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
         <li class="menu-item {% if request.path == '/registrar-empleado' %} active {% endif %}">

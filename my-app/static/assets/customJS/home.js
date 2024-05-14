@@ -57,6 +57,15 @@ function eliminarOperacion(id_operacion) {
   }
 }
 
+function eliminarJornada(id_jornada) {
+  if (confirm("¿Estas seguro que deseas Eliminar la Jornada?")) {
+    let url = `/borrar-jornada/${id_jornada}`;
+    if (url) {
+      window.location.href = url;
+    }
+  }
+}
+
 function eliminarOp(id_op) {
   if (confirm("¿Estas seguro que deseas Eliminar la oop?")) {
     let url = `/borrar-op/${id_op}`;

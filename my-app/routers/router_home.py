@@ -445,7 +445,7 @@ def viewFormOperacion():
             nombre_actividad = obtener_actividad()
             codigo_op = obtener_op()# Llamar a la nueva función
             print(codigo_op)  # Verificar que obtienes los datos correctos
-            return render_template('public/control/form_operaciones.html', nombre_proceso=nombre_proceso, id_empleados=id_empleados, nombre_actividad=nombre_actividad,codigo_op=codigo_op)
+            return render_template('public/operaciones/form_operaciones.html', nombre_proceso=nombre_proceso, id_empleados=id_empleados, nombre_actividad=nombre_actividad,codigo_op=codigo_op)
         else:
             flash('Primero debes iniciar sesión.', 'error')
             return redirect(url_for('inicio'))
@@ -454,7 +454,7 @@ def viewFormOperacion():
 @app.route('/lista-de-operaciones', methods=['GET'])
 def lista_operaciones():
     if 'conectado' in session:
-        return render_template('public/control/lista_operaciones.html', operaciones=sql_lista_operacionesBD())
+        return render_template('public/operaciones/lista_operaciones.html', operaciones=sql_lista_operacionesBD())
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
@@ -468,7 +468,7 @@ def formOperacion():
             return redirect(url_for('lista_operaciones'))
         else:
             flash('La Operacion NO fue registrada.', 'error')
-            return render_template('public/control/form_operaciones.html')
+            return render_template('public/operaciones/form_operaciones.html')
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
@@ -482,7 +482,7 @@ def detalleOperacion(id_operacion=None):
             return redirect(url_for('inicio'))
         else:
             detalle_operacion = sql_detalles_operacionesBD(id_operacion) or []
-            return render_template('public/control/detalles_operacion.html', detalle_operacion=detalle_operacion)
+            return render_template('public/operaciones/detalles_operacion.html', detalle_operacion=detalle_operacion)
     else:
         flash('Primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
@@ -493,7 +493,7 @@ def viewEditarOperacion(id):
         respuestaOperacion = buscarOperacionUnico(id)
         print(respuestaOperacion)        
         if respuestaOperacion:
-            return render_template('public/control/form_operacion_update.html', respuestaOperacion=respuestaOperacion)
+            return render_template('public/operaciones/form_operacion_update.html', respuestaOperacion=respuestaOperacion)
         else:
             flash('La Operacion no existe.', 'error')
             return redirect(url_for('inicio'))
@@ -509,7 +509,7 @@ def actualizarOperacion():
         return redirect(url_for('lista_operaciones'))
     
 @app.route('/borrar-operacion/<int:id_operacion>', methods=['GET'])
-def borrarOPeracio(id_operacion):
+def borrarOperacion(id_operacion):
     resp = eliminarOperacion(id_operacion)
     if resp:
         flash('La operacion fue eliminada correctamente', 'success')
@@ -600,3 +600,92 @@ def borrarOp(id_op):
     if resp:
         flash('La Orden de Producción fue eliminada correctamente', 'success')
         return redirect(url_for('lista_op'))
+    
+    
+    
+
+#### JORNADA
+@app.route('/registrar-jornada', methods=['GET', 'POST'])
+def viewFormJornada():
+    if request.method == 'POST':
+        id_empleado = request.form.get('id_empleado')
+        nombre_empleado = obtener_nombre_empleado(id_empleado)
+        return jsonify(nombre_empleado=nombre_empleado)
+    else:
+        id_empleados = obtener_id_empleados()
+        print("Nombre del empleado:", id_empleados)
+        if 'conectado' in session:
+            nombre_proceso = obtener_proceso()
+            print(nombre_proceso)
+            nombre_actividad = obtener_actividad()
+            codigo_op = obtener_op()# Llamar a la nueva función
+            print(codigo_op)  # Verificar que obtienes los datos correctos
+            return render_template('public/jornada/form_jornadas.html', nombre_proceso=nombre_proceso, id_empleados=id_empleados, nombre_actividad=nombre_actividad,codigo_op=codigo_op)
+        else:
+            flash('Primero debes iniciar sesión.', 'error')
+            return redirect(url_for('inicio'))
+        
+        
+@app.route('/lista-de-jornadas', methods=['GET'])
+def lista_jornadas():
+    if 'conectado' in session:
+        return render_template('public/jornada/lista_jornadas.html', jornadas=sql_lista_jornadasBD())
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+@app.route('/form-registrar-jornada', methods=['POST'])
+def formJornada():
+    if 'conectado' in session:
+        resultado = procesar_form_jornada(request.form)
+        print(resultado)
+        if resultado:
+            return redirect(url_for('lista_jornadas'))
+        else:
+            flash('La Jornada NO fue registrada.', 'error')
+            return render_template('public/jornada/form_jornadas.html')
+    else:
+        flash('primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+    
+@app.route("/detalles-jornada/<string:id_jornada>", methods=['GET'])
+def detalleJornada(id_jornada=None):
+    if 'conectado' in session:
+        # Verificamos si el parámetro id_jornada es None o no está presente en la URL
+        if id_jornada is None:
+            return redirect(url_for('inicio'))
+        else:
+            detalle_jornada = sql_detalles_jornadasBD(id_jornada) or []
+            return render_template('public/jornada/detalles_jornada.html', detalle_jornada=detalle_jornada)
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+@app.route("/editar-jornada/<int:id>", methods=['GET'])
+def viewEditarJornada(id):
+    if 'conectado' in session:
+        respuestaJornada = buscarJornadaUnico(id)
+        print(respuestaJornada)        
+        if respuestaJornada:
+            return render_template('public/jornada/form_jornada_update.html', respuestaJornada=respuestaJornada)
+        else:
+            flash('La Jornada no existe.', 'error')
+            return redirect(url_for('inicio'))
+    else:
+        flash('Primero debes iniciar sesión.', 'error')
+        return redirect(url_for('inicio'))
+    
+# Recibir formulario para actulizar informacion de la jornada
+@app.route('/actualizar-jornada', methods=['POST'])
+def actualizarJornada():
+    resultData = procesar_actualizacion_jornada(request)
+    if resultData:
+        return redirect(url_for('lista_jornadas'))
+    
+@app.route('/borrar-jornada/<int:id_jornada>', methods=['GET'])
+def borrarJornada(id_jornada):
+    resp = eliminarJornada(id_jornada)
+    if resp:
+        flash('La Jornada fue eliminada correctamente', 'success')
+        return redirect(url_for('lista_jornadas'))
